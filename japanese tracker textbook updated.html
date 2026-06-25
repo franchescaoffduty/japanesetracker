@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>日本語 Study Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ffffff; }
+    button { cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // ─── COLOR PALETTE ───────────────────────────────────────────
+    const C = {
+      mahogany: "#111111",
+      pearl: "#f5f5f5",
+      daffodil: "#ffffff",
+      gossamer: "#ebebeb",
+      dreamy: "#d4d4d4",
+      white: "#ffffff",
+      text: "#111111",
+      muted: "#666666",
+      border: "#dddddd",
+    };
+
+    // ─── LESSON PLAN DATA (Jun 25 onward) ────────────────────────
+    const PLAN_START = new Date(2026, 5, 25); // Jun 25 Thu
+
+    // Kanji Look & Learn is behind by 3 lessons.
+    // While studying Genki L9 → KLL L6, L10→L7, L11→L8, L12→L9
+    const KLL_KANJI = {
+      // KLL L6: body parts & health
+      6: ["目 (eye)","耳 (ear)","口 (mouth)","手 (hand)","足 (foot/leg)","頭 (head)","体 (body)","顔 (face)","歯 (tooth)","髪 (hair)","鼻 (nose)"],
+      // KLL L7: family
+      7: ["父 (father)","母 (mother)","兄 (older brother)","姉 (older sister)","弟 (younger brother)","妹 (younger sister)","家族 (family)","親 (parent)","子供 (child)","祖父 (grandfather)","祖母 (grandmother)"],
+      // KLL L8: time & actions
+      8: ["毎 (every)","朝 (morning)","昼 (noon)","夜 (night)","週 (week)","年 (year)","今 (now)","去 (last/past)","来 (come/next)","半 (half)","間 (interval/between)"],
+      // KLL L9: verbs & activities
+      9: ["食 (eat)","飲 (drink)","見 (see)","聞 (listen)","話 (speak)","読 (read)","書 (write)","買 (buy)","帰 (return)","起 (wake up)","寝 (sleep)"],
+    };
+
+    const LESSON_PLAN = {
+      9: {
+        title:"Lesson 9", kllLesson:6,
+        grammar:[
+          "Grammar 1: Past tense short forms — verb/adj conjugation table",
+          "Grammar 2: Past tense short forms in informal speech",
+          "Grammar 3: Quotations — 〜と思います (I think that…)",
+          "Grammar 4: Quotations — 〜と言っていました (said that…)",
+          "Grammar 5: Qualifying nouns with verbs — 〜ている人です",
+          "Grammar 6: もう〜ました / まだ〜ていません (already/not yet)",
+          "Grammar 7: 〜から (because/since)",
+        ],
+        workbook:[
+          "Ex 1 — Past Tense Short Forms: fill conjugation table",
+          "Ex 2 — Past Tense Informal Speech: Q&A pairs (ううん)",
+          "Ex 3 — 〜と思います: translate 6 sentences",
+          "Ex 4 — 〜と言っていました: interview report exercise",
+          "Ex 5 — Qualifying Nouns with Verbs: picture Q&A (どの人)",
+          "Ex 6 — もう〜ました/まだ〜ていません: write Q + affirmative/negative",
+          "Ex 7 — 〜から: translate sentences + Q&A",
+          "Ex 8 — 答えましょう: casual style free response (7 questions)",
+          "Ex 9 — 聞く練習: Listening A/B/C sections",
+        ],
+      },
+      10: {
+        title:"Lesson 10", kllLesson:7,
+        grammar:[
+          "Grammar 1: Comparison between two items — AはBより〜",
+          "Grammar 2: Comparison among three+ — 〜の中でいちばん〜",
+          "Grammar 3: Adjective/Noun + の (noun substitute pronoun)",
+          "Grammar 4: 〜つもりだ (plan/intention)",
+          "Grammar 5: Adjective + なる (to become)",
+          "Grammar 6-7: どこかに/どこにも + で行きます",
+        ],
+        workbook:[
+          "Ex 1 — Comparison Two Items: translate + Q&A",
+          "Ex 2 — Comparison Three+: いちばん questions + comparison sentences",
+          "Ex 3 — Adjective/Noun + の: picture Q&A + 5 translations",
+          "Ex 4 — 〜つもりだ: make sentences + answer 4 questions",
+          "Ex 5 — Adjective + なる: describe 3 picture changes + translate",
+          "Ex 6 — どこかに/どこにも: translate Q&A + dialogue fill-in",
+          "Ex 7 — 答えましょう: 8 free-response questions",
+          "Ex 8 — 聞く練習: Listening A/B sections",
+        ],
+      },
+      11: {
+        title:"Lesson 11", kllLesson:8,
+        grammar:[
+          "Grammar 1: 〜たい (want to do)",
+          "Grammar 2: 〜たり〜たりする (do things like A and B)",
+          "Grammar 3: 〜ことがある (have experienced doing)",
+          "Grammar 4: Noun A や Noun B (A and B, among others)",
+        ],
+        workbook:[
+          "Ex 1 — 〜たい: choose from list, write want/don't want sentences",
+          "Ex 2 — 〜たり〜たりする: translate 6 + answer Q&A",
+          "Ex 3 — 〜ことがある: choose 3 done/3 never done + Q&A pairs",
+          "Ex 4 — Noun A や Noun B: 7 free-response questions",
+          "Ex 5 — 答えましょう: trip questions (I) + personal questions (II)",
+          "Ex 6 — 聞く練習: Listening A/B/C sections",
+        ],
+      },
+      12: {
+        title:"Lesson 12", kllLesson:9,
+        grammar:[
+          "Grammar 1: 〜んです (explaining/seeking explanation)",
+          "Grammar 2: 〜すぎる (too much/excessive)",
+          "Grammar 3: 〜ほうがいいです (you'd better / should)",
+          "Grammar 4: 〜ので (because — formal/written)",
+          "Grammar 5: 〜なければいけません / なきゃいけません (must/have to)",
+          "Grammar 6: 〜でしょうか (I wonder / formal question)",
+        ],
+        workbook:[
+          "Ex 1 — 〜んです: answer どうしたんですか with 6 cued reasons",
+          "Ex 2 — 〜すぎる: complete 8 sentences + complain freely",
+          "Ex 3 — 〜ほうがいいです: translate 5 + give advice (3 scenarios)",
+          "Ex 4 — 〜ので: translate 6 + answer 3 questions",
+          "Ex 5 — 〜なければいけません: fill 5 sentences + write obligations",
+          "Ex 6 — 〜でしょうか: ask 8 roommate questions",
+          "Ex 7 — 答えましょう: 7 free-response questions",
+          "Ex 8 — 聞く練習: Listening A/B/C sections",
+        ],
+      },
+    };
+
+    // RTK sequence from #55 (your current position, pg 27 Lesson 3)
+    const RTK_SEQ = [
+      {n:55,c:"只",k:"only"},{n:56,c:"貝",k:"shellfish"},{n:57,c:"唄",k:"pop song"},
+      {n:58,c:"貞",k:"upright"},{n:59,c:"員",k:"employee"},{n:60,c:"貼",k:"post a bill"},
+      {n:61,c:"見",k:"see"},{n:62,c:"児",k:"newborn babe"},{n:63,c:"元",k:"beginning"},
+      {n:64,c:"頁",k:"page"},{n:65,c:"頑",k:"stubborn"},{n:66,c:"凡",k:"mediocre"},
+      {n:67,c:"負",k:"defeat"},{n:68,c:"万",k:"ten thousand"},{n:69,c:"句",k:"phrase"},
+      {n:70,c:"肌",k:"texture"},{n:71,c:"旬",k:"decameron"},{n:72,c:"勺",k:"ladle"},
+      {n:73,c:"的",k:"bull's eye"},{n:74,c:"首",k:"neck"},{n:75,c:"乙",k:"fish guts"},
+      {n:76,c:"乱",k:"riot"},{n:77,c:"直",k:"straightaway"},{n:78,c:"具",k:"tool"},
+      {n:79,c:"真",k:"true"},{n:80,c:"工",k:"craft"},{n:81,c:"左",k:"left"},
+      {n:82,c:"右",k:"right"},{n:83,c:"有",k:"possess"},{n:84,c:"賄",k:"bribe"},
+      {n:85,c:"貢",k:"tribute"},{n:86,c:"項",k:"paragraph"},{n:87,c:"刀",k:"sword"},
+      {n:88,c:"刃",k:"blade"},{n:89,c:"切",k:"cut"},{n:90,c:"召",k:"seduce"},
+      {n:91,c:"昭",k:"shining"},{n:92,c:"則",k:"rule"},{n:93,c:"副",k:"vice-"},
+      {n:94,c:"別",k:"separate"},{n:95,c:"丁",k:"street"},{n:96,c:"町",k:"village"},
+      {n:97,c:"可",k:"can"},{n:98,c:"頂",k:"place on the head"},{n:99,c:"子",k:"child"},
+      {n:100,c:"孔",k:"cavity"},{n:101,c:"了",k:"complete"},{n:102,c:"女",k:"woman"},
+      {n:103,c:"好",k:"fond"},{n:104,c:"如",k:"likeness"},{n:105,c:"母",k:"mama"},
+      {n:106,c:"貫",k:"pierce"},{n:107,c:"兄",k:"elder brother"},{n:108,c:"克",k:"overcome"},
+      {n:109,c:"小",k:"little"},{n:110,c:"少",k:"few"},{n:111,c:"大",k:"large"},
+      {n:112,c:"多",k:"many"},{n:113,c:"夕",k:"evening"},{n:114,c:"汐",k:"eventide"},
+      {n:115,c:"外",k:"outside"},{n:116,c:"名",k:"name"},{n:117,c:"石",k:"stone"},
+      {n:118,c:"砂",k:"sand"},{n:119,c:"妬",k:"jealous"},{n:120,c:"削",k:"plane"},
+      {n:121,c:"光",k:"ray"},{n:122,c:"太",k:"plump"},{n:123,c:"器",k:"utensil"},
+      {n:124,c:"臭",k:"stinking"},{n:125,c:"時",k:"time"},{n:126,c:"均",k:"level"},
+      {n:127,c:"火",k:"fire"},
+    ];
+
+    // 9-day hour pattern: Mon/Tue/Wed=2hr, Thu/Fri=1hr
+    // Per lesson: Day1=Mon(2hr), D2=Tue(2hr), D3=Wed(2hr), D4=Thu(1hr), D5=Fri(1hr),
+    //             D6=Mon(2hr), D7=Tue(2hr), D8=Wed(2hr), D9=Thu(1hr)
+    const DAY_HOURS = [2,2,2,1,1,2,2,2,1];
+
+    function getLessonDayPlan(lessonNum, lessonDay) {
+      const lesson = LESSON_PLAN[lessonNum];
+      if (!lesson) return null;
+      const g = lesson.grammar;
+      const w = lesson.workbook;
+      // Split grammar across days 1-3 (2hr each), workbook across days 4-8/9
+      const gMid = Math.ceil(g.length / 3);
+      const plans = [
+        { focus:"Textbook", hrs:2, items: g.slice(0, gMid),       label:`Grammar pts 1–${gMid}` },
+        { focus:"Textbook", hrs:2, items: g.slice(gMid, gMid*2),  label:`Grammar pts ${gMid+1}–${Math.min(gMid*2,g.length)}` },
+        { focus:"Textbook", hrs:2, items: g.slice(gMid*2),        label:`Grammar pts ${gMid*2+1}–${g.length} + vocab review` },
+        { focus:"Workbook", hrs:1, items: w.slice(0,2),           label:"Exercises 1–2" },
+        { focus:"Workbook", hrs:1, items: w.slice(2,4),           label:"Exercises 3–4" },
+        { focus:"Workbook", hrs:2, items: w.slice(4,6),           label:"Exercises 5–6" },
+        { focus:"Workbook", hrs:2, items: w.slice(6,8),           label:`Exercises 7–${Math.min(8,w.length)}` },
+        { focus:"Workbook", hrs:2, items: w.slice(8),             label:w.length>8?"Exercise 9 (Listening)":"Review all workbook exercises" },
+        { focus:"Review",   hrs:1, items: ["Review all grammar points + check flagged answers","BunPro — add next lesson vocab preview","Genki Online — full lesson kanji + vocab drill"], label:"Full Review + Next Lesson Preview" },
+      ];
+      const idx = Math.min(lessonDay - 1, 8);
+      return { ...plans[idx], hrs: DAY_HOURS[idx] };
+    }
+
+    // Get RTK kanji for a study-day index (0-based from Jun 25)
+    function getRTKForDayIdx(idx, is2hr) {
+      const perDay = is2hr ? 5 : 3;
+      let acc = 0;
+      for (let i = 0; i < idx; i++) acc += (i % 5 >= 3) ? 3 : 5; // Thu/Fri = 3, others = 5
+      return RTK_SEQ.slice(acc, acc + perDay);
+    }
+
+    // Get lesson number and lesson-day for a given date
+    function getLessonForDate(date) {
+      const d = new Date(date); d.setHours(0,0,0,0);
+      const start = new Date(PLAN_START);
+      if (d < start) return null;
+      // Count weekdays since PLAN_START
+      let weekdayIdx = 0;
+      const cur = new Date(start);
+      while (cur < d) {
+        const dow = cur.getDay();
+        if (dow >= 1 && dow <= 5) weekdayIdx++;
+        cur.setDate(cur.getDate() + 1);
+      }
+      const lessonNum = Math.floor(weekdayIdx / 9) + 9; // starts at L9
+      const lessonDay = (weekdayIdx % 9) + 1;
+      return { lessonNum, lessonDay };
+    }
+
+    // ─── COURSE CONFIG ───────────────────────────────────────────
+    const COURSE_START    = new Date(2026, 4, 13); // May 13
+    const RTK_INTRO_DATE  = new Date(2026, 5,  3); // Jun 3
+    const RTK_LESSON1_DATE = new Date(2026, 5, 4); // Jun 4
+
+    const L7_KANJI = ["父","母","兄","姉","弟","妹","家族","自分","友","体","顔","髪","目","耳","口","手","足"];
+    const L8_KANJI = ["会社","仕事","新聞","読む","書く","聞く","話す","休む","働く","電気","次","車","思う","言う"];
+
+    const L7_WORKBOOK = [
+      "L7–1 (p.69): Verb forms — わかります, やります, etc.",
+      "L7–2 (p.70): ~ています — singing, drinking, eating",
+      "L7–3 (p.71): ~ています (jobs/states) — 銀行で働いています",
+      "L7–4 (p.72): Appearance — 背が高い, 太っている",
+      "L7–5 (p.73): ~て connective — 安くておいしい",
+      "L7–6 (p.74): ~に行く/来る — 大阪に会いに行きます",
+      "L7–7 (p.75): Counters — 何人います",
+      "L7–8 (p.76): Free response — describe a friend",
+      "L7–9 (p.77): Listening comprehension",
+    ];
+    const L8_WORKBOOK = [
+      "L8–1 (p.78): Plain form conjugation — あける, かう, すわる",
+      "L8–2 (p.79): Plain form Q&A — よくバスに乗る？",
+      "L8–3 (p.80): ~と思います",
+      "L8–4 (p.81): ~と言っていました",
+      "L8–5 (p.82): ~ないでください",
+      "L8–6 (p.83): のが好き/上手",
+      "L8–7 (p.84): が subject marker",
+      "L8–8 (p.85): Free response — opinions",
+      "L8–9 (p.86): Listening comprehension",
+    ];
+
+    const RTK_ENTRIES = [
+      ["一 (one)","二 (two)","三 (three)","四 (four)","五 (five)","六 (six)","七 (seven)"],
+      ["八 (eight)","九 (nine)","十 (ten)","口 (mouth)","日 (sun/day)","月 (moon/month)","田 (rice field)"],
+      ["目 (eye)","古 (old)","吾 (I/myself)","冒 (risk)","朋 (companion)","明 (bright)","唱 (chant)"],
+      ["晶 (sparkle)","品 (goods)","呂 (spine)","昌 (prosperous)","早 (early)","旭 (rising sun)","世 (generation)"],
+      ["胃 (stomach)","旦 (nightbreak)","胆 (gall bladder)","亘 (span)","凹 (concave)","凸 (convex)","旧 (olden times)"],
+      ["自 (oneself)","白 (white)","百 (hundred)","中 (in/middle)","千 (thousand)","舌 (tongue)","升 (measuring box)"],
+      ["昇 (rise up)","丸 (round)","寸 (measurement)","専 (specialty)","博 (doctor)","占 (fortune-telling)","上 (above)"],
+      ["下 (below)","卓 (eminent)","朝 (morning)","嘲 (derision)","只 (only)","貝 (shellfish)","唄 (pop song)"],
+    ];
+
+    // ─── HELPERS ─────────────────────────────────────────────────
+    function isSameDay(a, b) {
+      return a.getFullYear() === b.getFullYear() &&
+             a.getMonth()    === b.getMonth()    &&
+             a.getDate()     === b.getDate();
+    }
+
+    function formatDate(d) {
+      return d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+    }
+
+    function getWednesdayOfWeek(date) {
+      const d = new Date(date);
+      d.setHours(0,0,0,0);
+      const diff = 3 - d.getDay();
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+
+    function getGenkiLesson(date) {
+      return date >= new Date(2026,5,3) ? 8 : 7;
+    }
+
+    function getRtkDayIndex(date) {
+      const d = new Date(date); d.setHours(0,0,0,0);
+      const start = new Date(RTK_LESSON1_DATE);
+      if (d < start) return -1;
+      let count = 0;
+      const cur = new Date(start);
+      while (cur <= d) {
+        const dow = cur.getDay();
+        if (dow === 1 || dow === 4 || dow === 5) {
+          if (isSameDay(cur, d)) return count;
+          count++;
+        }
+        cur.setDate(cur.getDate() + 1);
+      }
+      return -1;
+    }
+
+    // ─── VACATION CASCADE LOGIC ───────────────────────────────────
+    // Wednesdays (class days) and weekends are never shifted.
+    // Mon/Tue/Thu/Fri form a pool; marking one as vacation pushes
+    // every later task in that pool back by one slot, cascading
+    // forward through the rest of the course.
+    const COURSE_END = new Date(2026, 5, 24);
+
+    function buildStudyDays() {
+      const days = [];
+      let d = new Date(COURSE_START);
+      while (d <= COURSE_END) {
+        const dow = d.getDay();
+        if (dow >= 1 && dow <= 5 && dow !== 3) days.push(new Date(d));
+        d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+      }
+      return days;
+    }
+    const STUDY_DAYS = buildStudyDays();
+
+    function dateKeyStr(d) {
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
+
+    // Returns the "effective" date whose task-set should be shown on `date`,
+    // after accounting for any earlier vacation days in the Mon/Tue/Thu/Fri pool.
+    // Returns null if there's no task-set left to show (ran off the end).
+    function getEffectiveDate(date, vacations) {
+      const dow = date.getDay();
+      if (dow === 0 || dow === 3 || dow === 6) return date; // weekends & class day untouched
+
+      const idx = STUDY_DAYS.findIndex(d => isSameDay(d, date));
+      if (idx === -1) return date;
+
+      let vacBefore = 0;
+      for (let i = 0; i < idx; i++) {
+        if (vacations[dateKeyStr(STUDY_DAYS[i])]) vacBefore++;
+      }
+      const r = idx - vacBefore;
+      if (r < 0 || r >= STUDY_DAYS.length) return null;
+      return STUDY_DAYS[r];
+    }
+
+    // Wrapper used everywhere in the UI — applies vacation cascading
+    // before handing off to the pure schedule generator.
+    function getDisplayTasks(date, vacations) {
+      const dow = date.getDay();
+      if (dow === 0 || dow === 6) return [];
+      if (vacations[dateKeyStr(date)]) return [];
+      // After Jun 25: use new self-study plan
+      const d = new Date(date); d.setHours(0,0,0,0);
+      if (d >= new Date(2026,5,25)) return getPostPlanTasks(date);
+      // Before Jun 25: use old course schedule
+      if (dow === 3) return getTasksForDay(date);
+      const eff = getEffectiveDate(date, vacations);
+      if (!eff) return [];
+      return getTasksForDay(eff);
+    }
+
+    function categoryLabel(cat) {
+      return { srs:"SRS", kanji:"漢字", textbook:"Textbook", workbook:"Workbook", class:"Class", rtk:"RTK", grammar:"Grammar" }[cat] || cat;
+    }
+    function categoryBadgeColor(cat) {
+      return { srs:C.pearl, kanji:C.gossamer, textbook:"#f0f0f0", workbook:C.dreamy, class:C.dreamy, rtk:C.daffodil, grammar:"#e8e8e8" }[cat] || C.white;
+    }
+    function borderColor(cat) {
+      return { srs:"#e0e0e0", kanji:"#e0e0e0", textbook:"#e0e0e0", workbook:"#c8c8c8", class:"#c8c8c8", rtk:"#d8d8d8", grammar:"#d0d0d0" }[cat] || C.border;
+    }
+
+    // ─── TASK GENERATOR ──────────────────────────────────────────
+    function getTasksForDay(date) {
+      const d = new Date(date); d.setHours(0,0,0,0);
+      const dow = d.getDay();
+      const courseEnd = new Date(2026,5,24);
+      if (d < COURSE_START || d > courseEnd) return [];
+      if (dow === 0 || dow === 6) return [];
+
+      const wed = getWednesdayOfWeek(d);
+      const isClassDay   = isSameDay(d, wed);
+      const isPreClass   = d < wed;
+      const daysSinceWed = Math.floor((d - wed) / (24*60*60*1000));
+
+      const lesson      = getGenkiLesson(d);
+      const lessonKanji = lesson === 7 ? L7_KANJI : L8_KANJI;
+      const workbook    = lesson === 7 ? L7_WORKBOOK : L8_WORKBOOK;
+      const tasks = [];
+
+      // RTK INTRO (Jun 3 only)
+      if (isSameDay(d, RTK_INTRO_DATE)) {
+        tasks.push({ id:"rtk_intro", label:"RTK — Read the Introduction", resource:"Remembering the Kanji 1 (Heisig)", duration:"30–45 min",
+          note:"Read the full introduction to understand the system. No writing yet — that starts tomorrow.",
+          color:C.daffodil, category:"rtk" });
+        tasks.push({ id:"bunpro", label:"BunPro — Reviews + new vocab", resource:"BunPro", duration:"15 min",
+          note:"Reviews first, then new vocabulary for current lesson.", color:C.pearl, category:"srs" });
+        tasks.push({ id:"wanikani", label:"WaniKani — Clear review queue", resource:"WaniKani", duration:"10–15 min",
+          note:"Clear reviews before any new items.", color:C.pearl, category:"srs" });
+        return tasks;
+      }
+
+      // SRS — always on study days (fast: ~5 min each)
+      tasks.push({ id:"bunpro", label:"BunPro — Reviews + new vocab", resource:"BunPro", duration:"5 min",
+        note:"Reviews first, then new vocab for current lesson.", color:C.pearl, category:"srs" });
+      tasks.push({ id:"wanikani", label:"WaniKani — Clear review queue", resource:"WaniKani", duration:"5 min",
+        note:"Clear reviews first, then unlock new items matching current lesson kanji.", color:C.pearl, category:"srs" });
+
+      // ── WEDNESDAY: pre-class solo session (60 min) ──
+      if (isClassDay) {
+        tasks.push({ id:"wed_bunpro", label:"BunPro — Reviews", resource:"BunPro", duration:"5 min",
+          note:"Quick SRS sweep before class.", color:C.pearl, category:"srs" });
+        tasks.push({ id:"wed_wanikani", label:"WaniKani — Clear review queue", resource:"WaniKani", duration:"5 min",
+          note:"Clear queue before heading to class.", color:C.pearl, category:"srs" });
+        tasks.push({ id:"wed_grammar_review", label:"Last week's grammar — review mistakes",
+          resource:"Steven Kraft + Nihongo no Kobeya notes", duration:"10 min",
+          note:"Skim any errors or weak spots from last week's grammar sessions. Grounds new material in what you already know.",
+          color:"#e8e8e8", category:"grammar" });
+        tasks.push({ id:"wed_kanji", label:`UTP + Genki Online — quick L${lesson} kanji pass`,
+          resource:"Understanding through Pictures + Genki Online", duration:"10 min",
+          note:`Fast visual pass over today's lesson kanji: ${lessonKanji.slice(0,6).join("、")} etc. Primes recognition before class.`,
+          color:C.gossamer, category:"kanji" });
+        tasks.push({ id:"wed_vocab", label:`Genki — L${lesson} vocabulary review`,
+          resource:"Genki I Textbook / Genki Online", duration:"15 min",
+          note:`Review new vocabulary for today's lesson. Recall meanings and readings before the teacher uses them in class.`,
+          color:C.gossamer, category:"kanji" });
+        tasks.push({ id:"wed_grammar_prep", label:`Genki Online — L${lesson} grammar drills`,
+          resource:"Genki Online (genki.japantimes.co.jp)", duration:"15 min",
+          note:`Active grammar drills for today's lesson before class. Warm up production so speaking feels easier.`,
+          color:"#e8e8e8", category:"grammar" });
+        tasks.push({ id:"class", label:"📚 In-Person Class — SJJACC",
+          resource:"SJJACC Group Class", duration:"1.5 hrs",
+          note:`Lesson ${lesson} grammar, speaking, partner exercises. Teacher-led.`,
+          color:C.dreamy, category:"class" });
+        return tasks;
+      }
+
+      // PRE-CLASS: Mon & Tue
+      if (isPreClass) {
+        if (dow === 1) {
+          // Monday — 60 min: SRS (10) + kanji (10) + vocab (30) = 50 min
+          tasks.push({ id:"utp", label:`Understanding through Pictures — L${lesson} kanji (first pass)`,
+            resource:"Understanding through Pictures", duration:"10 min",
+            note:`Kanji: ${lessonKanji.slice(0,8).join("、")} — read each visual explanation, trace/write once or twice.`,
+            color:C.gossamer, category:"kanji" });
+          tasks.push({ id:"genki_kanji", label:`Genki Online — L${lesson} kanji recognition drills`,
+            resource:"Genki Online (genki.japantimes.co.jp)", duration:"10 min",
+            note:`Kanji recognition + reading exercises for Lesson ${lesson}.`,
+            color:C.gossamer, category:"kanji" });
+          tasks.push({ id:"genki_vocab_new", label:`Genki — L${lesson} new vocabulary study`,
+            resource:"Genki I Textbook / Genki Online", duration:"30 min",
+            note:`Study all new vocabulary for Lesson ${lesson}. Read, say aloud, write each word. Aim to recognise all words before class.`,
+            color:C.gossamer, category:"kanji" });
+        } else if (dow === 2) {
+          // Tuesday — 60 min: SRS (10) + kanji (10) + grammar x2 (40) = 60 min
+          tasks.push({ id:"utp2", label:`Understanding through Pictures — L${lesson} kanji (review)`,
+            resource:"Understanding through Pictures", duration:"10 min",
+            note:`Revisit any kanji shaky from Monday: ${lessonKanji.slice(8).join("、")}`,
+            color:C.gossamer, category:"kanji" });
+          tasks.push({ id:"grammar_renshuu", label:`Renshuu — L${lesson} grammar SRS drills`,
+            resource:"renshuu.org", duration:"20 min",
+            note:`Grammar SRS review for Lesson ${lesson}. Consolidate the week's grammar before Wednesday class.`,
+            color:"#e8e8e8", category:"grammar" });
+          tasks.push({ id:"grammar_kobeya", label:`Nihongo no Kobeya — Genki 1 L${lesson} grammar practice`,
+            resource:"nihongonokobeya.com/genki-1-grammar-practice/", duration:"20 min",
+            note:`Genki-specific grammar exercises for Lesson ${lesson}. Second pass — write original sentences using each grammar point.`,
+            color:"#e8e8e8", category:"grammar" });
+        }
+        return tasks;
+      }
+
+      // POST-CLASS
+      const rtkIdx = getRtkDayIndex(d);
+      const rtkEntries = (rtkIdx >= 0 && rtkIdx < RTK_ENTRIES.length) ? RTK_ENTRIES[rtkIdx] : null;
+
+      if (daysSinceWed === 1) {
+        // Thursday — 60 min: SRS (10) + RTK (15) + grammar (35) = 60 min
+        if (rtkEntries) tasks.push({ id:"rtk", label:`RTK — Lesson 1, Day ${rtkIdx+1} (${rtkEntries.length} kanji)`,
+          resource:"Remembering the Kanji 1", duration:"15 min",
+          note:`Write each with its keyword + story: ${rtkEntries.join("、")}`,
+          color:C.daffodil, category:"rtk" });
+        tasks.push({ id:"grammar_kraft", label:`Steven Kraft — L${lesson} grammar exercises`,
+          resource:"steven-kraft.com/projects/japanese/genki/", duration:"35 min",
+          note:`Lesson-specific sentence + grammar drills for L${lesson}. Grammar is freshest right after class — strike while it's hot!`,
+          color:"#e8e8e8", category:"grammar" });
+
+      } else if (daysSinceWed === 2) {
+        // Friday — 60 min: SRS (10) + kanji (10) + RTK (15) + textbook (25) = 60 min
+        tasks.push({ id:"utp3", label:`Understanding through Pictures — L${lesson} kanji (post-class review)`,
+          resource:"Understanding through Pictures", duration:"5 min",
+          note:"Revisit any kanji from this lesson that didn't click before or during class.",
+          color:C.gossamer, category:"kanji" });
+        tasks.push({ id:"genki_review", label:`Genki Online — L${lesson} kanji recognition + reading`,
+          resource:"Genki Online", duration:"5 min",
+          note:"Reinforce kanji now that you've heard them in class context.",
+          color:C.gossamer, category:"kanji" });
+        if (rtkEntries) tasks.push({ id:"rtk", label:`RTK — Lesson 1, Day ${rtkIdx+1} (${rtkEntries.length} kanji)`,
+          resource:"Remembering the Kanji 1", duration:"15 min",
+          note:`Write each with its keyword + story: ${rtkEntries.join("、")}`,
+          color:C.daffodil, category:"rtk" });
+        tasks.push({ id:"textbook1", label:`Genki Textbook — L${lesson} Grammar Part 1`,
+          resource:"Genki I Textbook", duration:"25 min",
+          note: lesson===7 ? "First half of class content: ~ています (ongoing actions), appearance descriptions."
+                           : "First half of class content: plain form verbs, short-form speech.",
+          color:C.gossamer, category:"textbook" });
+
+      } else if (daysSinceWed >= 5 && dow === 1) {
+        // Following Monday — 60 min: SRS (10) + RTK (15) + textbook (15) + workbook (20) = 60 min
+        if (rtkEntries) tasks.push({ id:"rtk", label:`RTK — Lesson 1, Day ${rtkIdx+1} (${rtkEntries.length} kanji)`,
+          resource:"Remembering the Kanji 1", duration:"15 min",
+          note:`Write each with its keyword + story: ${rtkEntries.join("、")}`,
+          color:C.daffodil, category:"rtk" });
+        tasks.push({ id:"textbook2", label:`Genki Textbook — L${lesson} Grammar Part 2`,
+          resource:"Genki I Textbook", duration:"15 min",
+          note: lesson===7 ? "Second half: ~に行く/来る purpose, counters (何人), reading passage."
+                           : "Second half: ~ないでください, のが好き/上手, reading passage.",
+          color:C.gossamer, category:"textbook" });
+        tasks.push({ id:"workbook", label:`Genki Workbook — L${lesson} (one section)`,
+          resource:"Genki I Workbook", duration:"20 min",
+          note:`Complete one full section, flag wrong answers: ${workbook[0]}`,
+          color:C.dreamy, category:"workbook" });
+      }
+
+      return tasks;
+    }
+
+    // ── Post-Jun-25 task generator ────────────────────────────────
+    function getPostPlanTasks(date) {
+      const dow = date.getDay();
+      const is2hr = dow===1||dow===2||dow===3;
+      const lp = getLessonForDate(date);
+      if (!lp || lp.lessonNum > 12) return [];
+      const plan = getLessonDayPlan(lp.lessonNum, lp.lessonDay);
+      const lesson = LESSON_PLAN[lp.lessonNum];
+      const kllKanji = KLL_KANJI[lesson.kllLesson]||[];
+
+      // Count weekday index for RTK
+      let dayIdx = 0;
+      const cur = new Date(PLAN_START);
+      while (cur < date) {
+        if (cur.getDay()>=1&&cur.getDay()<=5) dayIdx++;
+        cur.setDate(cur.getDate()+1);
+      }
+      const rtkToday = getRTKForDayIdx(dayIdx, is2hr);
+
+      const tasks = [];
+      tasks.push({ id:"bunpro", label:"BunPro — reviews + new vocab", resource:"BunPro", duration:"5 min", note:"Reviews first, then new vocabulary for current lesson.", color:C.pearl, category:"srs" });
+
+      // Main focus: textbook or workbook
+      if (plan.focus==="Textbook") {
+        plan.items.forEach((item,i) => {
+          tasks.push({ id:`textbook_${i}`, label:`Genki Textbook — ${item}`, resource:"Genki I Textbook", duration: is2hr ? "30–40 min" : "20 min", note:`Study grammar point carefully. Write example sentences. Check Genki Online for drills.`, color:C.gossamer, category:"textbook" });
+        });
+      } else if (plan.focus==="Workbook") {
+        plan.items.forEach((item,i) => {
+          tasks.push({ id:`workbook_${i}`, label:`Genki Workbook — ${item}`, resource:"Genki I Workbook", duration: is2hr ? "25 min" : "20 min", note:`Complete all items. Flag wrong answers to revisit.`, color:C.dreamy, category:"workbook" });
+        });
+      } else {
+        tasks.push({ id:"review", label:"Full review — grammar + workbook + vocab", resource:"Genki I + Genki Online", duration:"40 min", note:"Skim all grammar points, check flagged workbook answers, drill with Genki Online.", color:C.pearl, category:"textbook" });
+      }
+
+      // KLL kanji
+      if (kllKanji.length > 0) {
+        tasks.push({ id:"kll", label:`Kanji Look & Learn — L${lesson.kllLesson} (${plan.focus==="Textbook"?"first pass":"review"})`, resource:"Kanji Look & Learn", duration:"10 min", note:`Kanji: ${kllKanji.slice(0,5).join("、")}${kllKanji.length>5?" etc.":""}. Read visual explanation, trace each kanji once.`, color:C.gossamer, category:"kanji" });
+      }
+
+      // RTK
+      if (rtkToday.length > 0) {
+        tasks.push({ id:"rtk", label:`RTK — #${rtkToday[0].n}–#${rtkToday[rtkToday.length-1].n} (${rtkToday.length} kanji)`, resource:"Remembering the Kanji 1", duration: is2hr ? "15 min" : "10 min", note:`Write each with keyword + story: ${rtkToday.map(k=>`${k.c} (${k.k})`).join("、")}`, color:C.daffodil, category:"rtk" });
+      }
+
+      return tasks;
+    }
+    const STORAGE_KEY = "jpStudyTracker_v4";
+    function loadData() {
+      try { const v = localStorage.getItem(STORAGE_KEY); return v ? JSON.parse(v) : {}; }
+      catch { return {}; }
+    }
+    function saveData(data) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+    }
+
+    // ─── LESSON PLAN COMPONENTS ──────────────────────────────────
+    function LessonCard({ lessonNum, defaultOpen }) {
+      const [open, setOpen] = useState(!!defaultOpen);
+      const lesson = LESSON_PLAN[lessonNum];
+      if (!lesson) return null;
+      const kllKanji = KLL_KANJI[lesson.kllLesson] || [];
+      return (
+        <div style={{borderRadius:"10px",border:`1px solid ${C.border}`,marginBottom:"12px",overflow:"hidden"}}>
+          <div style={{background:C.mahogany,padding:"10px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}}
+            onClick={()=>setOpen(o=>!o)}>
+            <div style={{color:C.daffodil,fontWeight:"bold",fontSize:"15px"}}>{lesson.title}</div>
+            <div style={{color:C.dreamy,fontSize:"12px"}}>{open?"▲ hide":"▼ show"}</div>
+          </div>
+          {open && (
+            <>
+              <div style={{padding:"10px 14px 6px",background:C.daffodil}}>
+                <div style={{fontSize:"11px",fontWeight:"bold",color:C.mahogany,marginBottom:"6px",textTransform:"uppercase",letterSpacing:"0.5px"}}>Grammar Points</div>
+                {lesson.grammar.map((g,i) => (
+                  <div key={i} style={{fontSize:"13px",color:C.text,padding:"4px 0",borderBottom:`1px solid ${C.border}`,display:"flex",gap:"8px"}}>
+                    <span style={{color:C.dreamy,flexShrink:0}}>›</span>{g}
+                  </div>
+                ))}
+              </div>
+              <div style={{padding:"10px 14px 6px",background:C.white}}>
+                <div style={{fontSize:"11px",fontWeight:"bold",color:C.mahogany,marginBottom:"6px",textTransform:"uppercase",letterSpacing:"0.5px"}}>Workbook Exercises</div>
+                {lesson.workbook.map((w,i) => (
+                  <div key={i} style={{fontSize:"13px",color:C.text,padding:"4px 0",borderBottom:`1px solid ${C.border}`,display:"flex",gap:"8px"}}>
+                    <span style={{color:C.muted,flexShrink:0}}>›</span>{w}
+                  </div>
+                ))}
+              </div>
+              <div style={{padding:"8px 14px",background:C.pearl,borderTop:`1px solid ${C.border}`}}>
+                <div style={{fontSize:"11px",fontWeight:"bold",color:C.muted,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.5px"}}>
+                  Kanji Look &amp; Learn L{lesson.kllLesson} (catching up — 3 lessons behind)
+                </div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:"4px"}}>
+                  {kllKanji.map((k,i) => (
+                    <span key={i} style={{fontSize:"12px",background:C.white,border:`1px solid ${C.border}`,borderRadius:"6px",padding:"2px 8px",color:C.text}}>{k}</span>
+                  ))}
+                </div>
+              </div>
+              <div style={{padding:"10px 14px",background:"#f8f8f8",borderTop:`1px solid ${C.border}`}}>
+                <div style={{fontSize:"11px",fontWeight:"bold",color:C.mahogany,marginBottom:"8px",textTransform:"uppercase",letterSpacing:"0.5px"}}>
+                  9-Day Breakdown · Pattern: Mon/Tue/Wed = 2hr · Thu/Fri = 1hr
+                </div>
+                {[1,2,3,4,5,6,7,8,9].map(d => {
+                  const p = getLessonDayPlan(lessonNum, d);
+                  const bg = p.focus==="Textbook"?C.daffodil:p.focus==="Workbook"?C.gossamer:C.pearl;
+                  const dowLabel = ["Mon","Tue","Wed","Thu","Fri","Mon","Tue","Wed","Thu"][d-1];
+                  return (
+                    <div key={d} style={{display:"flex",gap:"10px",alignItems:"flex-start",padding:"5px 0",borderBottom:`1px solid ${C.border}`}}>
+                      <div style={{minWidth:"65px",fontSize:"12px",fontWeight:"bold",color:C.mahogany}}>Day {d} · {dowLabel}</div>
+                      <div style={{flex:1,fontSize:"12px",color:C.text}}>
+                        <span style={{background:bg,borderRadius:"4px",padding:"1px 6px",marginRight:"6px",fontSize:"11px"}}>{p.focus}</span>
+                        {p.label}
+                      </div>
+                      <div style={{fontSize:"11px",color:C.muted,flexShrink:0,fontWeight:"bold"}}>{p.hrs}hr</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    function LessonPlanView() {
+      return (
+        <div>
+          <div style={{fontSize:"17px",fontWeight:"bold",color:C.mahogany,marginBottom:"6px"}}>
+            Genki I · Lessons 9–12
+          </div>
+          <div style={{fontSize:"12px",color:C.muted,marginBottom:"16px",fontStyle:"italic"}}>
+            1.5 weeks per lesson · Mon/Tue/Wed = 2 hrs · Thu/Fri = 1 hr · Starting Jun 25
+          </div>
+          {[9,10,11,12].map(n => <LessonCard key={n} lessonNum={n} defaultOpen={n===9} />)}
+        </div>
+      );
+    }
+
+    // ─── APP ─────────────────────────────────────────────────────
+    function App() {
+      const today = new Date(); today.setHours(0,0,0,0);
+
+      const [selectedDate, setSelectedDate] = useState(today);
+      const [completions, setCompletions]   = useState({});
+      const [vacations,   setVacations]     = useState({});
+      const [loaded,      setLoaded]        = useState(false);
+      const [view,        setView]          = useState("day");
+
+      useEffect(() => {
+        const d = loadData();
+        setCompletions(d.completions || {});
+        setVacations(d.vacations || {});
+        setLoaded(true);
+      }, []);
+
+      useEffect(() => {
+        if (!loaded) return;
+        saveData({ completions, vacations });
+      }, [completions, vacations, loaded]);
+
+      function dateKey(d) {
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      }
+      function toggleTask(date, taskId) {
+        const k = dateKey(date);
+        setCompletions(prev => { const day={...(prev[k]||{})}; day[taskId]=!day[taskId]; return {...prev,[k]:day}; });
+      }
+      function toggleVacation(date) {
+        const k = dateKey(date);
+        setVacations(prev => ({...prev,[k]:!prev[k]}));
+      }
+      function isVacation(date)          { return !!(vacations[dateKey(date)]); }
+      function isComplete(date, taskId)  { return !!((completions[dateKey(date)]||{})[taskId]); }
+      function dayProgress(date) {
+        const tasks = getDisplayTasks(date, vacations);
+        if (!tasks.length) return null;
+        return { done: tasks.filter(t=>isComplete(date,t.id)).length, total: tasks.length };
+      }
+
+      function getWeekDays(date) {
+        const d = new Date(date); d.setHours(0,0,0,0);
+        const dow = d.getDay();
+        const mon = new Date(d); mon.setDate(d.getDate()-(dow===0?6:dow-1));
+        return Array.from({length:5},(_,i)=>{ const x=new Date(mon); x.setDate(mon.getDate()+i); return x; });
+      }
+      function moveWeek(dir) {
+        const d = new Date(selectedDate); d.setDate(d.getDate()+dir*7); setSelectedDate(d);
+      }
+
+      const weekDays      = getWeekDays(selectedDate);
+      const selectedTasks = getDisplayTasks(selectedDate, vacations);
+      const selectedVac   = isVacation(selectedDate);
+      const selDow        = selectedDate.getDay();
+      const isWeekend     = selDow===0 || selDow===6;
+      const DAY_NAMES     = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+
+      // ── Styles ──
+      const S = {
+        app:       { fontFamily:"Georgia,serif", background:"#ffffff", minHeight:"100vh", color:C.text },
+        header:    { background:C.mahogany, color:C.daffodil, padding:"16px 20px 12px", display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 2px 10px rgba(100,60,30,.25)" },
+        title:     { fontSize:"20px", fontWeight:"bold", margin:0, letterSpacing:".3px" },
+        subtitle:  { fontSize:"12px", color:C.dreamy, marginTop:"2px", fontStyle:"italic" },
+        navRow:    { display:"flex", justifyContent:"center", alignItems:"center", gap:"14px", padding:"10px 0 2px", background:"rgba(255,255,255,0.8)" },
+        navBtn:    { padding:"4px 14px", borderRadius:"20px", border:`1px solid ${C.border}`, background:C.white, color:C.mahogany, fontSize:"12px", fontFamily:"Georgia,serif" },
+        weekRow:   { display:"flex", gap:"4px", padding:"8px 12px 10px", background:"rgba(255,255,255,0.8)", borderBottom:`1px solid ${C.border}`, overflowX:"auto" },
+        body:      { padding:"14px 16px" },
+        dateHeader:{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"12px" },
+        dateTitle: { fontSize:"17px", fontWeight:"bold", color:C.mahogany },
+        dots:      { display:"flex", justifyContent:"center", gap:"2px", marginTop:"3px", minHeight:"7px" },
+        meta:      { display:"flex", gap:"6px", flexWrap:"wrap", marginTop:"4px", alignItems:"center" },
+        note:      { fontSize:"12px", color:C.muted, fontStyle:"italic", padding:"0 12px 10px 41px", lineHeight:1.55 },
+        empty:     { textAlign:"center", padding:"36px 16px", color:C.muted, fontStyle:"italic", fontSize:"14px", lineHeight:1.8 },
+        wTask:     { display:"flex", gap:"8px", alignItems:"center", padding:"6px 14px", borderBottom:`1px solid ${C.border}`, cursor:"pointer" },
+      };
+
+      const toggleBtn = (active) => ({
+        padding:"4px 14px", borderRadius:"20px",
+        border:`1px solid ${active?C.daffodil:"rgba(0,0,0,0.2)"}`,
+        background:active?C.daffodil:"transparent",
+        color:active?C.mahogany:C.daffodil,
+        fontSize:"12px", fontFamily:"Georgia,serif", fontWeight:active?"bold":"normal"
+      });
+      const chip = (sel,isToday,vac) => ({
+        flex:1, minWidth:"50px", padding:"7px 3px 5px", borderRadius:"10px", textAlign:"center", cursor:"pointer",
+        border:sel?`2px solid ${C.mahogany}`:`1px solid ${C.border}`,
+        background:vac?"#eee":sel?C.gossamer:isToday?C.daffodil:C.white, opacity:vac?.55:1
+      });
+      const checkbox = (done) => ({
+        width:"19px", height:"19px", borderRadius:"5px",
+        border:`2px solid ${done?C.mahogany:C.border}`,
+        background:done?C.mahogany:"white",
+        display:"flex", alignItems:"center", justifyContent:"center",
+        flexShrink:0, marginTop:"1px", color:"white", fontSize:"12px"
+      });
+      const pill = (col) => ({
+        padding:"2px 8px", borderRadius:"10px", background:col,
+        fontSize:"10px", color:C.mahogany, border:`1px solid ${C.border}`
+      });
+      const taskCard = (done) => ({
+        borderRadius:"10px", border:`1px solid ${C.border}`, marginBottom:"9px",
+        background:done?"#f6f4f2":C.white, opacity:done?.65:1, transition:"opacity .2s"
+      });
+      const taskRow = (cat) => ({
+        display:"flex", alignItems:"flex-start", gap:"10px", padding:"11px 12px 8px",
+        borderLeft:`4px solid ${borderColor(cat)}`, cursor:"pointer", borderRadius:"0 8px 8px 0"
+      });
+      const taskLabel = (done) => ({
+        fontSize:"13px", fontWeight:"bold",
+        color:done?"#999":C.text, textDecoration:done?"line-through":"none", lineHeight:1.4
+      });
+      const wCard = (isToday) => ({
+        borderRadius:"10px", border:`1px solid ${isToday?C.mahogany:C.border}`,
+        background:C.white, marginBottom:"10px", overflow:"hidden"
+      });
+      const wHead = (isToday) => ({
+        padding:"8px 14px", background:isToday?C.mahogany:C.daffodil,
+        color:isToday?C.daffodil:C.mahogany,
+        display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer"
+      });
+      const vacBtn = (v) => ({
+        padding:"4px 12px", borderRadius:"20px",
+        border:`1px solid ${v?"#bbb":C.dreamy}`,
+        background:v?"#e4e4e4":C.gossamer,
+        color:v?"#777":C.mahogany, fontSize:"11px", fontFamily:"Georgia,serif"
+      });
+
+      return (
+        <div style={S.app}>
+          {/* Header */}
+          <div style={S.header}>
+            <div>
+              <div style={S.title}>日本語 Study Tracker</div>
+              <div style={S.subtitle}>Genki I · Self-Study · Jun 25, 2026 onward</div>
+            </div>
+            <div style={{display:"flex",gap:"6px"}}>
+              <button style={toggleBtn(view==="day")}  onClick={()=>setView("day")}>Day</button>
+              <button style={toggleBtn(view==="week")} onClick={()=>setView("week")}>Week</button>
+              <button style={toggleBtn(view==="plan")} onClick={()=>setView("plan")}>Lesson Plan</button>
+            </div>
+          </div>
+
+          {/* Week nav */}
+          <div style={S.navRow}>
+            <button style={S.navBtn} onClick={()=>moveWeek(-1)}>← Prev</button>
+            <span style={{fontSize:"12px",color:C.muted,fontStyle:"italic"}}>Week of {formatDate(weekDays[0])}</span>
+            <button style={S.navBtn} onClick={()=>moveWeek(1)}>Next →</button>
+          </div>
+
+          {/* Day chips */}
+          <div style={S.weekRow}>
+            {weekDays.map(day => {
+              const sel     = isSameDay(day, selectedDate);
+              const isToday = isSameDay(day, today);
+              const vac     = isVacation(day);
+              const tasks   = getDisplayTasks(day, vacations);
+              const prog    = dayProgress(day);
+              return (
+                <div key={day.toISOString()} style={chip(sel,isToday,vac)}
+                  onClick={()=>{setSelectedDate(day);setView("day");}}>
+                  <div style={{fontSize:"9px",textTransform:"uppercase",letterSpacing:".6px",
+                    color:isToday?C.mahogany:C.muted,fontWeight:isToday?"bold":"normal"}}>
+                    {DAY_NAMES[day.getDay()]}
+                  </div>
+                  <div style={{fontSize:"16px",fontWeight:sel?"bold":"normal",
+                    color:sel?C.mahogany:C.text,lineHeight:1.2}}>
+                    {day.getDate()}
+                  </div>
+                  <div style={S.dots}>
+                    {prog ? tasks.map((t,i)=>(
+                      <div key={i} style={{width:"5px",height:"5px",borderRadius:"50%",
+                        background:isComplete(day,t.id)?borderColor(t.category):C.border}} />
+                    )) : <div style={{width:"5px",height:"5px"}} />}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Body */}
+          <div style={S.body}>
+            {view==="day" ? (
+              <>
+                <div style={S.dateHeader}>
+                  <div style={S.dateTitle}>{formatDate(selectedDate)}</div>
+                  <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
+                    {!isWeekend && (()=>{
+                      const prog = dayProgress(selectedDate);
+                      return prog ? (
+                        <span style={{fontSize:"12px",color:C.muted}}>
+                          {prog.done}/{prog.total}{prog.done===prog.total&&prog.total>0?" 🌸":""}
+                        </span>
+                      ) : null;
+                    })()}
+                    {!isWeekend && (
+                      <button style={vacBtn(selectedVac)} onClick={()=>toggleVacation(selectedDate)}>
+                        {selectedVac?"✓ Vacation":"Vacation Day"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {isWeekend ? (
+                  <div style={S.empty}>🌸 Weekend — rest up!<br/><span style={{fontSize:"13px"}}>No tasks scheduled.</span></div>
+                ) : selectedVac ? (
+                  <div style={S.empty}>
+                    ✈️ Vacation Day<br/>
+                    <span style={{fontSize:"13px",color:"#bbb"}}>Nothing is rescheduled. Pick up where you left off tomorrow.</span>
+                  </div>
+                ) : selectedTasks.length===0 ? (
+                  <div style={S.empty}>No tasks scheduled today.<br/><span style={{fontSize:"12px"}}>Tasks follow your Wednesday class cycle.</span></div>
+                ) : (
+                  <>
+                    {/* Today's Lesson Plan card — shows when date is Jun 25+ */}
+                    {(() => {
+                      const lp = getLessonForDate(selectedDate);
+                      if (!lp || lp.lessonNum > 12) return null;
+                      const plan = getLessonDayPlan(lp.lessonNum, lp.lessonDay);
+                      const lesson = LESSON_PLAN[lp.lessonNum];
+                      const dow = selectedDate.getDay();
+                      const is2hr = dow === 1 || dow === 2 || dow === 3;
+                      let dayIdx = 0;
+                      const cur = new Date(PLAN_START);
+                      while (cur < selectedDate) {
+                        if (cur.getDay() >= 1 && cur.getDay() <= 5) dayIdx++;
+                        cur.setDate(cur.getDate() + 1);
+                      }
+                      const rtkToday = getRTKForDayIdx(dayIdx, is2hr);
+                      return (
+                        <div style={{borderRadius:"12px",border:`2px solid ${C.dreamy}`,marginBottom:"12px",overflow:"hidden"}}>
+                          <div style={{background:C.mahogany,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                            <div style={{color:C.daffodil,fontWeight:"bold",fontSize:"14px"}}>
+                              📖 {lesson.title} · Day {lp.lessonDay} of 9
+                            </div>
+                            <div style={{color:C.dreamy,fontSize:"12px",fontStyle:"italic"}}>
+                              {is2hr?"2-hr session":"1-hr session"} · {plan.focus}
+                            </div>
+                          </div>
+                          {/* Today's focus */}
+                          <div style={{padding:"10px 14px 4px",background:C.daffodil}}>
+                            <div style={{fontSize:"12px",fontWeight:"bold",color:C.mahogany,marginBottom:"6px",textTransform:"uppercase",letterSpacing:"0.5px"}}>
+                              Today's Focus — {plan.label}
+                            </div>
+                            {plan.items.map((item,i) => (
+                              <div key={i} style={{fontSize:"13px",color:C.text,padding:"3px 0",borderBottom:`1px solid ${C.border}`,display:"flex",gap:"8px"}}>
+                                <span style={{color:C.dreamy}}>›</span> {item}
+                              </div>
+                            ))}
+                          </div>
+                          {/* RTK for today */}
+                          {rtkToday.length > 0 && (
+                            <div style={{padding:"8px 14px",background:"#f5f5f5",borderTop:`1px solid ${C.border}`}}>
+                              <div style={{fontSize:"11px",fontWeight:"bold",color:C.muted,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.5px"}}>
+                                RTK today · {rtkToday.length} new kanji
+                              </div>
+                              <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
+                                {rtkToday.map(k => (
+                                  <span key={k.n} style={{fontSize:"13px",background:C.white,border:`1px solid ${C.border}`,borderRadius:"6px",padding:"3px 8px",color:C.text}}>
+                                    <span style={{fontSize:"17px",marginRight:"4px"}}>{k.c}</span>
+                                    <span style={{fontSize:"11px",color:C.muted}}>#{k.n} {k.k}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {/* Genki kanji for this lesson via KLL */}
+                          <div style={{padding:"8px 14px",background:C.pearl,borderTop:`1px solid ${C.border}`}}>
+                            <div style={{fontSize:"11px",fontWeight:"bold",color:C.muted,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.5px"}}>
+                              Kanji Look &amp; Learn L{lesson.kllLesson} · {plan.focus==="Textbook"?"Study new kanji":"Review all lesson kanji"}
+                            </div>
+                            <div style={{display:"flex",flexWrap:"wrap",gap:"4px"}}>
+                              {(KLL_KANJI[lesson.kllLesson]||[]).map((k,i) => (
+                                <span key={i} style={{fontSize:"12px",background:C.white,border:`1px solid ${C.border}`,borderRadius:"6px",padding:"2px 7px",color:C.text}}>{k}</span>
+                              ))}
+                            </div>
+                          </div>
+                          {/* BunPro vocab reminder */}
+                          <div style={{padding:"6px 14px",background:C.gossamer,borderTop:`1px solid ${C.border}`,fontSize:"12px",color:C.mahogany,fontStyle:"italic"}}>
+                            🗂 BunPro — review queue + L{lp.lessonNum} new vocabulary · 5–10 min
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    {selectedTasks.map(task => {
+                      const done = isComplete(selectedDate, task.id);
+                      return (
+                        <div key={task.id} style={taskCard(done)}>
+                          <div style={taskRow(task.category)} onClick={()=>toggleTask(selectedDate,task.id)}>
+                            <div style={checkbox(done)}>{done?"✓":""}</div>
+                            <div style={{flex:1}}>
+                              <div style={taskLabel(done)}>{task.label}</div>
+                              <div style={S.meta}>
+                                <span style={pill(categoryBadgeColor(task.category))}>{categoryLabel(task.category)}</span>
+                                <span style={pill(C.daffodil)}>{task.duration}</span>
+                                <span style={{fontSize:"10px",color:C.muted,fontStyle:"italic"}}>{task.resource}</span>
+                              </div>
+                            </div>
+                          </div>
+                          {task.note && <div style={S.note}>{task.note}</div>}
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </>
+            ) : view==="week" ? (
+              weekDays.map(day => {
+                const isToday = isSameDay(day, today);
+                const tasks   = getDisplayTasks(day, vacations);
+                const vac     = isVacation(day);
+                const prog    = dayProgress(day);
+                const lp      = getLessonForDate(day);
+                const dow     = day.getDay();
+                const is2hr   = dow===1||dow===2||dow===3;
+                let dayIdx = 0;
+                const cur2 = new Date(PLAN_START);
+                while (cur2 < day) {
+                  if (cur2.getDay()>=1&&cur2.getDay()<=5) dayIdx++;
+                  cur2.setDate(cur2.getDate()+1);
+                }
+                const rtkW = lp && lp.lessonNum<=12 ? getRTKForDayIdx(dayIdx, is2hr) : [];
+                return (
+                  <div key={day.toISOString()} style={wCard(isToday)}>
+                    <div style={wHead(isToday)} onClick={()=>{setSelectedDate(day);setView("day");}}>
+                      <div style={{fontSize:"14px",fontWeight:"bold"}}>
+                        {formatDate(day)}{isToday?" · Today":""}
+                      </div>
+                      <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
+                        {lp && lp.lessonNum<=12 && (
+                          <span style={{fontSize:"11px",background:"rgba(255,255,255,0.15)",padding:"2px 8px",borderRadius:"10px"}}>
+                            L{lp.lessonNum} · Day {lp.lessonDay}/9
+                          </span>
+                        )}
+                        <div style={{fontSize:"12px",fontStyle:"italic"}}>
+                          {vac?"✈️ Vacation":prog?`${prog.done}/${prog.total} done`:"—"}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Lesson focus for this day */}
+                    {lp && lp.lessonNum<=12 && !vac && (()=>{
+                      const plan = getLessonDayPlan(lp.lessonNum, lp.lessonDay);
+                      const bg = plan.focus==="Textbook"?C.daffodil:plan.focus==="Workbook"?C.gossamer:C.pearl;
+                      return (
+                        <div style={{padding:"6px 14px",background:bg,borderBottom:`1px solid ${C.border}`}}>
+                          <div style={{fontSize:"12px",color:C.mahogany,fontWeight:"bold"}}>
+                            {plan.focus}: {plan.label}
+                          </div>
+                          {plan.items.slice(0,2).map((item,i)=>(
+                            <div key={i} style={{fontSize:"11px",color:C.muted,marginTop:"2px"}}>› {item}</div>
+                          ))}
+                          {plan.items.length>2 && <div style={{fontSize:"11px",color:C.muted,fontStyle:"italic"}}>+{plan.items.length-2} more — tap day for details</div>}
+                          {rtkW.length>0 && (
+                            <div style={{fontSize:"11px",color:C.muted,marginTop:"4px"}}>
+                              RTK: {rtkW.map(k=>`${k.c} (${k.k})`).join(" · ")}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                    {!vac && tasks.map(task => {
+                      const done = isComplete(day, task.id);
+                      return (
+                        <div key={task.id} style={S.wTask} onClick={()=>toggleTask(day,task.id)}>
+                          <div style={checkbox(done)}>{done?"✓":""}</div>
+                          <div style={{fontSize:"13px",color:done?"#aaa":C.text,
+                            textDecoration:done?"line-through":"none",flex:1}}>{task.label}</div>
+                          <span style={pill(categoryBadgeColor(task.category))}>{task.duration}</span>
+                        </div>
+                      );
+                    })}
+                    {vac && <div style={{padding:"8px 14px",fontSize:"12px",color:"#bbb",fontStyle:"italic"}}>Vacation — no tasks counted</div>}
+                    {!vac && tasks.length===0 && <div style={{padding:"8px 14px",fontSize:"12px",color:C.muted,fontStyle:"italic"}}>No tasks scheduled</div>}
+                  </div>
+                );
+              })
+            ) : (
+              /* ── LESSON PLAN VIEW ── */
+              <LessonPlanView />
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
