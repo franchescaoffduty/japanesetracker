@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bible in a Year — Fr. Mike Schmitz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1b2d;
+    --navy-mid: #1a2d45;
+    --navy-light: #243d5e;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #8a6f32;
+    --cream: #f5efe0;
+    --cream-dark: #e8dfc8;
+    --parchment: #faf6ed;
+    --text-dark: #1a1208;
+    --text-mid: #3d2f12;
+    --text-light: #6b5428;
+    --red-period: #8b2020;
+    --green-period: #1a5c2a;
+    --purple-period: #4a2070;
+    --teal-period: #0d4a4a;
+    --orange-period: #7a3c0a;
+    --blue-period: #1a3a6b;
+    --rose-period: #7a1a3c;
+    --olive-period: #3d5210;
+    --brown-period: #5c3010;
+    --slate-period: #2a3d52;
+    --violet-period: #3a1a6b;
+    --indigo-period: #1a2a6b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--cream);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Parchment texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(201,168,76,0.015) 2px, rgba(201,168,76,0.015) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(201,168,76,0.01) 3px, rgba(201,168,76,0.01) 6px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 16px 60px; }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 48px 24px 32px;
+    border-bottom: 1px solid rgba(201,168,76,0.25);
+    margin-bottom: 32px;
+  }
+
+  .header-ornament {
+    color: var(--gold);
+    font-size: 20px;
+    letter-spacing: 8px;
+    opacity: 0.7;
+    margin-bottom: 12px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(24px, 5vw, 40px);
+    font-weight: 400;
+    color: var(--gold-light);
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--cream);
+  }
+
+  header p {
+    font-size: 14px;
+    color: rgba(245,239,224,0.55);
+    margin-top: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .stat {
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    color: var(--gold);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: rgba(245,239,224,0.5);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Settings panel */
+  .settings-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    color: var(--gold-light);
+    font-family: 'Crimson Pro', serif;
+    font-size: 14px;
+    padding: 8px 16px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .settings-toggle:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
+
+  .settings-panel {
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: none;
+  }
+  .settings-panel.open { display: block; }
+
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .settings-row:last-child { margin-bottom: 0; }
+
+  .settings-row label {
+    font-size: 13px;
+    color: rgba(245,239,224,0.7);
+    letter-spacing: 0.5px;
+    min-width: 120px;
+  }
+
+  .settings-row input[type="date"],
+  .settings-row input[type="number"] {
+    background: var(--navy);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    color: var(--cream);
+    font-family: 'Crimson Pro', serif;
+    font-size: 15px;
+    padding: 6px 12px;
+    outline: none;
+  }
+  .settings-row input:focus { border-color: var(--gold); }
+
+  .btn-save {
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 6px;
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 20px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+  }
+  .btn-save:hover { background: var(--gold-light); }
+
+  /* Week navigation */
+  .week-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 16px;
+  }
+
+  .week-nav-btn {
+    background: none;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    color: var(--gold-light);
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+  }
+  .week-nav-btn:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+  .week-nav-btn:disabled { opacity: 0.25; cursor: default; }
+
+  .week-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--gold-light);
+    text-align: center;
+    flex: 1;
+  }
+
+  .week-label span {
+    display: block;
+    font-size: 12px;
+    font-family: 'Crimson Pro', serif;
+    color: rgba(245,239,224,0.5);
+    font-style: italic;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  /* Today shortcut */
+  .jump-today {
+    background: none;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    color: var(--gold);
+    font-family: 'Crimson Pro', serif;
+    font-size: 13px;
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .jump-today:hover { background: rgba(201,168,76,0.1); }
+
+  /* Week grid */
+  .week-grid { display: flex; flex-direction: column; gap: 8px; }
+
+  .day-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-left: 4px solid transparent;
+    border-radius: 8px;
+    padding: 14px 18px;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+
+  .day-card.is-today {
+    border-color: rgba(201,168,76,0.35);
+    border-left-color: var(--gold);
+    background: rgba(201,168,76,0.06);
+  }
+
+  .day-card.is-done {
+    opacity: 0.55;
+  }
+
+  .day-card.is-done .day-readings {
+    text-decoration: line-through;
+    text-decoration-color: rgba(201,168,76,0.4);
+  }
+
+  .day-card.is-behind { border-left-color: #c0392b; }
+  .day-card.is-future { opacity: 0.7; }
+  .day-card.skipped { opacity: 0.35; }
+
+  .day-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .day-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(201,168,76,0.4);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .day-checkbox:hover { border-color: var(--gold); }
+  .day-checkbox.checked {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .day-checkbox.checked::after {
+    content: '✓';
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+  }
+
+  .day-meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .day-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .day-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--gold);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .period-badge {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  .today-badge {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(201,168,76,0.2);
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.4);
+    white-space: nowrap;
+  }
+
+  .behind-badge {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(192,57,43,0.15);
+    color: #e74c3c;
+    border: 1px solid rgba(192,57,43,0.35);
+    white-space: nowrap;
+  }
+
+  .day-date {
+    font-size: 12px;
+    color: rgba(245,239,224,0.4);
+    font-style: italic;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  .day-readings {
+    font-size: 14.5px;
+    color: rgba(245,239,224,0.85);
+    line-height: 1.5;
+  }
+
+  .reading-row {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .reading-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(201,168,76,0.55);
+    min-width: 28px;
+    flex-shrink: 0;
+  }
+
+  .reading-text { color: rgba(245,239,224,0.8); }
+
+  .reading-text.psalm { font-style: italic; color: rgba(245,239,224,0.65); }
+
+  /* Period colors */
+  .period-early-world    { background: rgba(26,92,42,0.18);  color: #6fc98a;  border-color: rgba(111,201,138,0.3); }
+  .period-patriarchs     { background: rgba(74,32,112,0.18); color: #b07ad4;  border-color: rgba(176,122,212,0.3); }
+  .period-egypt-exodus   { background: rgba(139,32,32,0.18); color: #e07070;  border-color: rgba(224,112,112,0.3); }
+  .period-desert         { background: rgba(122,60,10,0.18); color: #d4945a;  border-color: rgba(212,148,90,0.3); }
+  .period-conquest       { background: rgba(26,58,107,0.18); color: #6ab0e0;  border-color: rgba(106,176,224,0.3); }
+  .period-messianic-1    { background: rgba(201,168,76,0.15);color: var(--gold-light); border-color: rgba(201,168,76,0.35); }
+  .period-royal          { background: rgba(92,48,16,0.2);   color: #d4945a;  border-color: rgba(212,148,90,0.3); }
+  .period-messianic-2    { background: rgba(201,168,76,0.15);color: var(--gold-light); border-color: rgba(201,168,76,0.35); }
+  .period-divided        { background: rgba(42,61,82,0.25);  color: #7ab0d4;  border-color: rgba(122,176,212,0.3); }
+  .period-exile          { background: rgba(58,18,107,0.2);  color: #a07ad4;  border-color: rgba(160,122,212,0.3); }
+  .period-messianic-3    { background: rgba(201,168,76,0.15);color: var(--gold-light); border-color: rgba(201,168,76,0.35); }
+  .period-return         { background: rgba(13,74,74,0.2);   color: #6ac4c4;  border-color: rgba(106,196,196,0.3); }
+  .period-maccabean      { background: rgba(107,26,26,0.2);  color: #e07070;  border-color: rgba(224,112,112,0.3); }
+  .period-messianic-4    { background: rgba(201,168,76,0.15);color: var(--gold-light); border-color: rgba(201,168,76,0.35); }
+  .period-church         { background: rgba(26,42,107,0.2);  color: #7090e0;  border-color: rgba(112,144,224,0.3); }
+
+  /* Catch-up bar */
+  .catchup-bar {
+    background: rgba(192,57,43,0.12);
+    border: 1px solid rgba(192,57,43,0.3);
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .catchup-bar.visible { display: block; }
+  .catchup-bar h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: #e74c3c;
+    margin-bottom: 4px;
+  }
+  .catchup-bar p {
+    font-size: 13.5px;
+    color: rgba(245,239,224,0.7);
+    line-height: 1.5;
+  }
+  .catchup-bar.vacation-mode {
+    background: rgba(201,168,76,0.1);
+    border-color: rgba(201,168,76,0.3);
+  }
+  .catchup-bar.vacation-mode h3 {
+    color: var(--gold-light);
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    margin-bottom: 28px;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(245,239,224,0.45);
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .progress-track {
+    height: 4px;
+    background: rgba(201,168,76,0.12);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  /* All days toggle */
+  .view-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .view-btn {
+    background: none;
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 6px;
+    color: rgba(245,239,224,0.55);
+    font-family: 'Crimson Pro', serif;
+    font-size: 13px;
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all 0.15s;
+  }
+  .view-btn.active {
+    background: rgba(201,168,76,0.12);
+    border-color: var(--gold);
+    color: var(--gold-light);
+  }
+
+  footer {
+    text-align: center;
+    padding-top: 40px;
+    font-size: 12px;
+    color: rgba(245,239,224,0.25);
+    letter-spacing: 0.5px;
+  }
+
+  .settings-section { margin-bottom: 4px; }
+  .settings-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+  .settings-section-desc {
+    font-size: 13px;
+    color: rgba(245,239,224,0.5);
+    line-height: 1.5;
+    font-style: italic;
+    margin-bottom: 2px;
+  }
+  .settings-divider {
+    height: 1px;
+    background: rgba(201,168,76,0.15);
+    margin: 18px 0;
+  }
+  .stepper-btn {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 5px;
+    color: var(--gold-light);
+    font-size: 18px;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+    transition: background 0.15s;
+  }
+  .stepper-btn:hover { background: rgba(201,168,76,0.2); }
+  .btn-reschedule {
+    background: linear-gradient(135deg, rgba(201,168,76,0.25), rgba(201,168,76,0.12));
+    border: 1px solid rgba(201,168,76,0.5);
+    border-radius: 6px;
+    color: var(--gold-light);
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 20px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .btn-reschedule:hover { background: rgba(201,168,76,0.3); border-color: var(--gold); }
+
+  .vacation-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: rgba(245,239,224,0.75);
+  }
+  .vacation-item .vacation-remove {
+    background: none;
+    border: none;
+    color: rgba(231,76,60,0.7);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+    transition: color 0.15s;
+  }
+  .vacation-item .vacation-remove:hover { color: #e74c3c; }
+  .vacation-item .vacation-dates { color: var(--gold-light); font-weight: 500; margin-right: 8px; }
+
+  @media (max-width: 600px) {
+    .day-card { padding: 12px 14px; }
+    .day-title-row { gap: 6px; }
+    .day-date { display: none; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="header-ornament">✦ ✦ ✦</div>
+    <h1>Bible in a Year<br><em>with Fr. Mike Schmitz</em></h1>
+    <p>The Great Adventure Reading Plan</p>
+  </header>
+
+  <div class="stats-bar" id="statsBar"></div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span id="progressText">Loading…</span>
+      <span id="progressPct"></span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+    <button class="settings-toggle" onclick="toggleSettings()">⚙ Settings</button>
+    <button class="jump-today" onclick="jumpToToday()">Jump to today</button>
+  </div>
+
+  <div class="settings-panel" id="settingsPanel">
+
+    <!-- Section 1: Update progress -->
+    <div class="settings-section">
+      <div class="settings-section-title">📖 Update my progress</div>
+      <div class="settings-section-desc">Which episode (plan day) did you last complete? This will mark all previous days as done and reschedule your remaining days starting from today.</div>
+      <div class="settings-row" style="margin-top:12px; align-items:center;">
+        <label>Last completed episode</label>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="stepper-btn" onclick="stepEpisode(-1)">−</button>
+          <input type="number" id="currentDayInput" min="1" max="365" style="width:72px; text-align:center;">
+          <button class="stepper-btn" onclick="stepEpisode(1)">+</button>
+        </div>
+        <span id="episodePreview" style="font-size:13px; color:var(--gold); font-style:italic;"></span>
+      </div>
+      <div class="settings-row" style="margin-top:4px;">
+        <button class="btn-reschedule" onclick="rescheduleFromToday()">✦ Reschedule from today</button>
+        <span style="font-size:12px; color:rgba(245,239,224,0.35); font-style:italic;">remaining days recalculated</span>
+      </div>
+    </div>
+
+    <div class="settings-divider"></div>
+
+    <!-- Section: Vacation / pause days -->
+    <div class="settings-section">
+      <div class="settings-section-title">🧳 Vacation / pause days</div>
+      <div class="settings-section-desc">Add date ranges you'll be away. Your schedule will skip these days automatically — the plan shifts so you're not "behind" while you're out.</div>
+      <div class="settings-row" style="margin-top:10px;">
+        <label>From</label>
+        <input type="date" id="vacationStartInput">
+        <label style="min-width:auto;">to</label>
+        <input type="date" id="vacationEndInput">
+        <input type="text" id="vacationLabelInput" placeholder="Label (optional)" style="flex:1; min-width:100px; background: var(--navy); border: 1px solid rgba(201,168,76,0.3); border-radius: 6px; color: var(--cream); font-family: 'Crimson Pro', serif; font-size: 14px; padding: 6px 12px; outline: none;">
+      </div>
+      <div class="settings-row" style="margin-top:4px;">
+        <button class="btn-reschedule" onclick="addVacation()">+ Add vacation</button>
+      </div>
+      <div id="vacationList" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;"></div>
+    </div>
+
+    <div class="settings-divider"></div>
+
+    <!-- Section 2: Schedule settings -->
+    <div class="settings-section">
+      <div class="settings-section-title">⚙ Schedule settings</div>
+      <div class="settings-row">
+        <label>Day 1 start date</label>
+        <input type="date" id="startDateInput">
+      </div>
+      <div class="settings-row">
+        <label>Episodes per day</label>
+        <input type="number" id="paceInput" min="1" max="5" style="width:60px; text-align:center;">
+        <span style="font-size:12px; color:rgba(245,239,224,0.35); font-style:italic;">how many plan days you complete per calendar day</span>
+      </div>
+      <div class="settings-row" style="margin-top:4px;">
+        <button class="btn-save" onclick="saveSettings()">Save schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="catchup-bar" id="catchupBar">
+    <h3 id="catchupBarTitle">⚠ You're behind schedule</h3>
+    <p id="catchupText"></p>
+  </div>
+
+  <div class="view-toggle">
+    <button class="view-btn active" id="btnWeek" onclick="setView('week')">Week view</button>
+    <button class="view-btn" id="btnAll" onclick="setView('all')">All 365 days</button>
+  </div>
+
+  <div class="week-nav" id="weekNav">
+    <button class="week-nav-btn" id="prevWeekBtn" onclick="changeWeek(-1)">‹</button>
+    <div class="week-label" id="weekLabel">Week —<span></span></div>
+    <button class="week-nav-btn" id="nextWeekBtn" onclick="changeWeek(1)">›</button>
+  </div>
+
+  <div class="week-grid" id="dayGrid"></div>
+
+  <footer>Ascension's Bible in a Year · The Great Adventure Bible Timeline · Jeff Cavins</footer>
+</div>
+
+<script>
+const PLAN = [
+  // [day, period, reading1, reading2, psalmProv]
+  [1,"Early World","Genesis 1–2","—","Psalm 19"],
+  [2,"Early World","Genesis 3–4","—","Psalm 104"],
+  [3,"Early World","Genesis 5–6","—","Psalm 136"],
+  [4,"Early World","Genesis 7–9","—","Psalm 1"],
+  [5,"Early World","Genesis 10–11","—","Psalm 2"],
+  [6,"Patriarchs","Genesis 12–13","Job 1–2","Proverbs 1:1–7"],
+  [7,"Patriarchs","Genesis 14–15","Job 3–4","Proverbs 1:8–19"],
+  [8,"Patriarchs","Genesis 16–17","Job 5–6","Proverbs 1:20–33"],
+  [9,"Patriarchs","Genesis 18–19","Job 7–8","Proverbs 2:1–5"],
+  [10,"Patriarchs","Genesis 20–21","Job 9–10","Proverbs 2:6–8"],
+  [11,"Patriarchs","Genesis 22–23","Job 11–12","Proverbs 2:9–15"],
+  [12,"Patriarchs","Genesis 24","Job 13–14","Proverbs 2:16–19"],
+  [13,"Patriarchs","Genesis 25–26","Job 15–16","Proverbs 2:20–22"],
+  [14,"Patriarchs","Genesis 27–28","Job 17–18","Proverbs 3:1–4"],
+  [15,"Patriarchs","Genesis 29–30","Job 19–20","Proverbs 3:5–8"],
+  [16,"Patriarchs","Genesis 31–32","Job 21–22","Proverbs 3:9–12"],
+  [17,"Patriarchs","Genesis 33–34","Job 23–24","Proverbs 3:13–18"],
+  [18,"Patriarchs","Genesis 35–36","Job 25–26","Proverbs 3:19–24"],
+  [19,"Patriarchs","Genesis 37","Job 27–28","Proverbs 3:25–27"],
+  [20,"Patriarchs","Genesis 38","Job 29–30","Proverbs 3:28–32"],
+  [21,"Patriarchs","Genesis 39–40","Job 31–32","Proverbs 3:33–35"],
+  [22,"Patriarchs","Genesis 41–42","Job 33–34","Proverbs 4:1–9"],
+  [23,"Patriarchs","Genesis 43–44","Job 35–36","Proverbs 4:10–19"],
+  [24,"Patriarchs","Genesis 45–46","Job 37–38","Proverbs 4:20–27"],
+  [25,"Patriarchs","Genesis 47–48","Job 39–40","Psalm 16"],
+  [26,"Patriarchs","Genesis 49–50","Job 41–42","Psalm 17"],
+  [27,"Egypt & Exodus","Exodus 1–2","Leviticus 1","Psalm 44"],
+  [28,"Egypt & Exodus","Exodus 3","Leviticus 2–3","Psalm 45"],
+  [29,"Egypt & Exodus","Exodus 4–5","Leviticus 4","Psalm 46"],
+  [30,"Egypt & Exodus","Exodus 6–7","Leviticus 5","Psalm 47"],
+  [31,"Egypt & Exodus","Exodus 8","Leviticus 6","Psalm 48"],
+  [32,"Egypt & Exodus","Exodus 9","Leviticus 7","Psalm 49"],
+  [33,"Egypt & Exodus","Exodus 10–11","Leviticus 8","Psalm 50"],
+  [34,"Egypt & Exodus","Exodus 12","Leviticus 9","Psalm 114"],
+  [35,"Egypt & Exodus","Exodus 13–14","Leviticus 10","Psalm 53"],
+  [36,"Egypt & Exodus","Exodus 15–16","Leviticus 11","Psalm 71"],
+  [37,"Egypt & Exodus","Exodus 17–18","Leviticus 12","Psalm 73"],
+  [38,"Egypt & Exodus","Exodus 19–20","Leviticus 13","Psalm 74"],
+  [39,"Egypt & Exodus","Exodus 21","Leviticus 14","Psalm 75"],
+  [40,"Egypt & Exodus","Exodus 22","Leviticus 15","Psalm 76"],
+  [41,"Egypt & Exodus","Exodus 23","Leviticus 16","Psalm 77"],
+  [42,"Egypt & Exodus","Exodus 24","Leviticus 17–18","Psalm 78"],
+  [43,"Egypt & Exodus","Exodus 25–26","Leviticus 19","Psalm 79"],
+  [44,"Egypt & Exodus","Exodus 27–28","Leviticus 20","Psalm 119:1–88"],
+  [45,"Egypt & Exodus","Exodus 29","Leviticus 21","Psalm 119:89–176"],
+  [46,"Egypt & Exodus","Exodus 30–31","Leviticus 22","Psalm 115"],
+  [47,"Egypt & Exodus","Exodus 32","Leviticus 23","Psalm 80"],
+  [48,"Egypt & Exodus","Exodus 33–34","Leviticus 24","Psalm 81"],
+  [49,"Egypt & Exodus","Exodus 35–36","Leviticus 25","Psalm 82"],
+  [50,"Egypt & Exodus","Exodus 37–38","Leviticus 26","Psalm 83"],
+  [51,"Egypt & Exodus","Exodus 39–40","Leviticus 27","Psalm 84"],
+  [52,"Desert Wanderings","Numbers 1","Deuteronomy 1","Psalm 85"],
+  [53,"Desert Wanderings","Numbers 2","Deuteronomy 2","Psalm 87"],
+  [54,"Desert Wanderings","Numbers 3","Deuteronomy 3","Psalm 88"],
+  [55,"Desert Wanderings","Numbers 4","Deuteronomy 4","Psalm 89"],
+  [56,"Desert Wanderings","Numbers 5","Deuteronomy 5","Psalm 90"],
+  [57,"Desert Wanderings","Numbers 6","Deuteronomy 6","Psalm 91"],
+  [58,"Desert Wanderings","Numbers 7","Deuteronomy 7","Psalm 92"],
+  [59,"Desert Wanderings","Numbers 8–9","Deuteronomy 8","Psalm 93"],
+  [60,"Desert Wanderings","Numbers 10","Deuteronomy 9","Psalm 10"],
+  [61,"Desert Wanderings","Numbers 11","Deuteronomy 10","Psalm 33"],
+  [62,"Desert Wanderings","Numbers 12–13","Deuteronomy 11","Psalm 94"],
+  [63,"Desert Wanderings","Numbers 14","Deuteronomy 12","Psalm 95"],
+  [64,"Desert Wanderings","Numbers 15","Deuteronomy 13–14","Psalm 96"],
+  [65,"Desert Wanderings","Numbers 16","Deuteronomy 15–16","Psalm 97"],
+  [66,"Desert Wanderings","Numbers 17","Deuteronomy 17–18","Psalm 98"],
+  [67,"Desert Wanderings","Numbers 18","Deuteronomy 19–20","Psalm 99"],
+  [68,"Desert Wanderings","Numbers 19–20","Deuteronomy 21","Psalm 100"],
+  [69,"Desert Wanderings","Numbers 21","Deuteronomy 22","Psalm 102"],
+  [70,"Desert Wanderings","Numbers 22","Deuteronomy 23","Psalm 105"],
+  [71,"Desert Wanderings","Numbers 23","Deuteronomy 24–25","Psalm 106"],
+  [72,"Desert Wanderings","Numbers 24–25","Deuteronomy 26","Psalm 107"],
+  [73,"Desert Wanderings","Numbers 26","Deuteronomy 27","Psalm 111"],
+  [74,"Desert Wanderings","Numbers 27–28","Deuteronomy 28","Psalm 112"],
+  [75,"Desert Wanderings","Numbers 29–30","Deuteronomy 29","Psalm 113"],
+  [76,"Desert Wanderings","Numbers 31","Deuteronomy 30","Psalm 116"],
+  [77,"Desert Wanderings","Numbers 32","Deuteronomy 31","Psalm 117"],
+  [78,"Desert Wanderings","Numbers 33","Deuteronomy 32","Psalm 118"],
+  [79,"Desert Wanderings","Numbers 34","Deuteronomy 33","Psalm 120"],
+  [80,"Desert Wanderings","Numbers 35–36","Deuteronomy 34","Psalm 121"],
+  [81,"Conquest & Judges","Joshua 1–4","—","Psalm 123"],
+  [82,"Conquest & Judges","Joshua 5–7","—","Psalm 125"],
+  [83,"Conquest & Judges","Joshua 8–9","—","Psalm 126"],
+  [84,"Conquest & Judges","Joshua 10–11","—","Psalm 128"],
+  [85,"Conquest & Judges","Joshua 12–14","—","Psalm 129"],
+  [86,"Conquest & Judges","Joshua 15–18","—","Psalm 130"],
+  [87,"Conquest & Judges","Joshua 19–21","—","Psalm 131"],
+  [88,"Conquest & Judges","Joshua 22–24","—","Psalm 132"],
+  [89,"Conquest & Judges","Judges 1–3","Ruth 1","Psalm 133"],
+  [90,"Conquest & Judges","Judges 4–5","Ruth 2","Psalm 134"],
+  [91,"Conquest & Judges","Judges 6–8","Ruth 3","Psalm 135"],
+  [92,"Conquest & Judges","Judges 9–11","Ruth 4","Psalm 137"],
+  [93,"Conquest & Judges","Judges 12–15","—","Psalm 146"],
+  [94,"Conquest & Judges","Judges 16–18","—","Psalm 147"],
+  [95,"Conquest & Judges","Judges 19–21","—","Psalm 148"],
+  [96,"Conquest & Judges","1 Samuel 1–2","—","Psalm 149"],
+  [97,"Conquest & Judges","1 Samuel 3–5","—","Psalm 150"],
+  [98,"Conquest & Judges","1 Samuel 6–8","—","Psalm 86"],
+  [99,"Messianic Checkpoint","John 1–3","—","Proverbs 5:1–6"],
+  [100,"Messianic Checkpoint","John 4–6","—","Proverbs 5:7–14"],
+  [101,"Messianic Checkpoint","John 7–9","—","Proverbs 5:15–23"],
+  [102,"Messianic Checkpoint","John 10–12","—","Proverbs 6:1–11"],
+  [103,"Messianic Checkpoint","John 13–15","—","Proverbs 6:12–19"],
+  [104,"Messianic Checkpoint","John 16–18","—","Proverbs 6:20–24"],
+  [105,"Messianic Checkpoint","John 19–21","—","Proverbs 6:25–35"],
+  [106,"Royal Kingdom","1 Samuel 9–10","—","Psalm 50"],
+  [107,"Royal Kingdom","1 Samuel 11–12","—","Psalm 55"],
+  [108,"Royal Kingdom","1 Samuel 13–14","—","Psalm 58"],
+  [109,"Royal Kingdom","1 Samuel 15–16","—","Psalm 61"],
+  [110,"Royal Kingdom","1 Samuel 17","—","Psalm 12"],
+  [111,"Royal Kingdom","1 Samuel 18–19","—","Psalm 59"],
+  [112,"Royal Kingdom","1 Samuel 20","—","Psalm 142"],
+  [113,"Royal Kingdom","1 Samuel 21–22","—","Psalm 52"],
+  [114,"Royal Kingdom","1 Samuel 23","—","Psalm 54"],
+  [115,"Royal Kingdom","1 Samuel 24","—","Psalm 57"],
+  [116,"Royal Kingdom","1 Samuel 25","—","Psalm 63"],
+  [117,"Royal Kingdom","1 Samuel 26","—","Psalm 56"],
+  [118,"Royal Kingdom","1 Samuel 27–28","—","Psalm 34"],
+  [119,"Royal Kingdom","1 Samuel 29–31","—","Psalm 18"],
+  [120,"Royal Kingdom","2 Samuel 1","1 Chronicles 1","Psalm 13"],
+  [121,"Royal Kingdom","2 Samuel 2","1 Chronicles 2","Psalm 24"],
+  [122,"Royal Kingdom","2 Samuel 3","1 Chronicles 3–4","Psalm 25"],
+  [123,"Royal Kingdom","2 Samuel 4","1 Chronicles 5–6","Psalm 26"],
+  [124,"Royal Kingdom","2 Samuel 5","1 Chronicles 7–8","Psalm 27"],
+  [125,"Royal Kingdom","2 Samuel 6–7","1 Chronicles 9","Psalm 89"],
+  [126,"Royal Kingdom","2 Samuel 8","1 Chronicles 10–11","Psalm 60"],
+  [127,"Royal Kingdom","2 Samuel 9","1 Chronicles 12","Psalm 28"],
+  [128,"Royal Kingdom","2 Samuel 10","1 Chronicles 13","Psalm 31"],
+  [129,"Royal Kingdom","2 Samuel 11","1 Chronicles 14–15","Psalm 32"],
+  [130,"Royal Kingdom","2 Samuel 12","1 Chronicles 16","Psalm 51"],
+  [131,"Royal Kingdom","2 Samuel 13","1 Chronicles 17","Psalm 35"],
+  [132,"Royal Kingdom","2 Samuel 14","1 Chronicles 18","Psalm 14"],
+  [133,"Royal Kingdom","2 Samuel 15","1 Chronicles 19–20","Psalm 3"],
+  [134,"Royal Kingdom","2 Samuel 16","1 Chronicles 21","Psalm 15"],
+  [135,"Royal Kingdom","2 Samuel 17","1 Chronicles 22","Psalm 36"],
+  [136,"Royal Kingdom","2 Samuel 18","1 Chronicles 23","Psalm 37"],
+  [137,"Royal Kingdom","2 Samuel 19","1 Chronicles 24","Psalm 38"],
+  [138,"Royal Kingdom","2 Samuel 20","1 Chronicles 25","Psalm 39"],
+  [139,"Royal Kingdom","2 Samuel 21","1 Chronicles 26","Psalm 40"],
+  [140,"Royal Kingdom","2 Samuel 22","1 Chronicles 27","Psalm 41"],
+  [141,"Royal Kingdom","2 Samuel 23","1 Chronicles 28","Psalm 42"],
+  [142,"Royal Kingdom","2 Samuel 24","1 Chronicles 29","Psalm 30"],
+  [143,"Royal Kingdom","1 Kings 1","2 Chronicles 1","Psalm 43"],
+  [144,"Royal Kingdom","1 Kings 2","2 Chronicles 2–3","Psalm 62"],
+  [145,"Royal Kingdom","1 Kings 3","2 Chronicles 4–5","Psalm 64"],
+  [146,"Royal Kingdom","1 Kings 4","2 Chronicles 6","Psalm 65"],
+  [147,"Royal Kingdom","1 Kings 5","2 Chronicles 7–8","Psalm 66"],
+  [148,"Royal Kingdom","1 Kings 6","2 Chronicles 9","Psalm 4"],
+  [149,"Royal Kingdom","1 Kings 7","Ecclesiastes 1–3","Psalm 5"],
+  [150,"Royal Kingdom","1 Kings 8","Ecclesiastes 4–6","Psalm 6"],
+  [151,"Royal Kingdom","1 Kings 9","Ecclesiastes 5–6","Psalm 7"],
+  [152,"Royal Kingdom","1 Kings 10","Ecclesiastes 7–9","Psalm 8"],
+  [153,"Royal Kingdom","1 Kings 11","Ecclesiastes 10–12","Psalm 9"],
+  [154,"Messianic Checkpoint","Mark 1–2","—","Psalm 11"],
+  [155,"Messianic Checkpoint","Mark 3–4","—","Psalm 20"],
+  [156,"Messianic Checkpoint","Mark 5–6","—","Psalm 21"],
+  [157,"Messianic Checkpoint","Mark 7–8","—","Psalm 23"],
+  [158,"Messianic Checkpoint","Mark 9–10","—","Psalm 29"],
+  [159,"Messianic Checkpoint","Mark 11–12","—","Psalm 67"],
+  [160,"Messianic Checkpoint","Mark 13–14","—","Psalm 68"],
+  [161,"Messianic Checkpoint","Mark 15–16","—","Psalm 22"],
+  [162,"Divided Kingdom","1 Kings 12","2 Chronicles 10–11","Song of Solomon 1"],
+  [163,"Divided Kingdom","1 Kings 13","2 Chronicles 12–13","Song of Solomon 2"],
+  [164,"Divided Kingdom","1 Kings 14","2 Chronicles 14–15","Song of Solomon 3"],
+  [165,"Divided Kingdom","1 Kings 15–16","2 Chronicles 16–17","Song of Solomon 4"],
+  [166,"Divided Kingdom","1 Kings 17–18","2 Chronicles 18–19","Song of Solomon 5"],
+  [167,"Divided Kingdom","1 Kings 19–20","2 Chronicles 20","Song of Solomon 6"],
+  [168,"Divided Kingdom","1 Kings 21","2 Chronicles 21–22","Song of Solomon 7"],
+  [169,"Divided Kingdom","1 Kings 22","2 Chronicles 23","Song of Solomon 8"],
+  [170,"Divided Kingdom","2 Kings 1","2 Chronicles 24","Psalm 69"],
+  [171,"Divided Kingdom","2 Kings 2","2 Chronicles 25","Psalm 70"],
+  [172,"Divided Kingdom","2 Kings 3","2 Chronicles 26–27","Psalm 72"],
+  [173,"Divided Kingdom","2 Kings 4","2 Chronicles 28","Psalm 127"],
+  [174,"Divided Kingdom","2 Kings 5","Hosea 1–3","Psalm 101"],
+  [175,"Divided Kingdom","2 Kings 6–7","Hosea 4–7","Psalm 103"],
+  [176,"Divided Kingdom","2 Kings 8","Hosea 8–10","Psalm 108"],
+  [177,"Divided Kingdom","2 Kings 9","Hosea 11–14","Psalm 109"],
+  [178,"Divided Kingdom","2 Kings 10","Amos 1–3","Psalm 110"],
+  [179,"Divided Kingdom","2 Kings 11–12","Amos 4–6","Psalm 122"],
+  [180,"Divided Kingdom","2 Kings 13–14","Amos 7–9","Psalm 124"],
+  [181,"Divided Kingdom","2 Kings 15","Jonah 1–4","Psalm 138"],
+  [182,"Divided Kingdom","2 Kings 16","Micah 1–4","Psalm 139"],
+  [183,"Divided Kingdom","2 Kings 17","Micah 5–7","Psalm 140"],
+  [184,"Exile","2 Kings 18","2 Chronicles 29","Psalm 141"],
+  [185,"Exile","2 Kings 19","2 Chronicles 30","Psalm 143"],
+  [186,"Exile","2 Kings 20","2 Chronicles 31","Psalm 144"],
+  [187,"Exile","2 Kings 21","2 Chronicles 32","Psalm 145"],
+  [188,"Exile","2 Kings 22","2 Chronicles 33","Proverbs 7"],
+  [189,"Exile","2 Kings 23","2 Chronicles 34","Proverbs 8:1–21"],
+  [190,"Exile","2 Kings 24","2 Chronicles 35","Proverbs 8:22–36"],
+  [191,"Exile","2 Kings 25","2 Chronicles 36","Proverbs 9:1–6"],
+  [192,"Exile","Isaiah 1–2","Tobit 1–2","Proverbs 9:7–12"],
+  [193,"Exile","Isaiah 3–4","Tobit 3–4","Proverbs 9:13–18"],
+  [194,"Exile","Isaiah 5–6","Tobit 5–6","Proverbs 10:1–4"],
+  [195,"Exile","Isaiah 7–8","Tobit 7–9","Proverbs 10:5–8"],
+  [196,"Exile","Isaiah 9–10","Tobit 10–12","Proverbs 10:9–12"],
+  [197,"Exile","Isaiah 11–13","Tobit 13–14","Proverbs 10:13–16"],
+  [198,"Exile","Isaiah 14–15","Joel 1–2","Proverbs 10:17–20"],
+  [199,"Exile","Isaiah 16–17","Joel 3","Proverbs 10:21–24"],
+  [200,"Exile","Isaiah 18–20","Nahum 1–2","Proverbs 10:25–28"],
+  [201,"Exile","Isaiah 21–22","Nahum 3","Proverbs 10:29–32"],
+  [202,"Exile","Isaiah 23–24","Habakkuk 1–2","Proverbs 11:1–4"],
+  [203,"Exile","Isaiah 25–27","Habakkuk 3","Proverbs 11:5–8"],
+  [204,"Exile","Isaiah 28–29","Zephaniah 1–2","Proverbs 11:9–12"],
+  [205,"Exile","Isaiah 30–31","Zephaniah 3","Proverbs 11:13–16"],
+  [206,"Exile","Isaiah 32–33","Baruch 1–2","Proverbs 11:17–20"],
+  [207,"Exile","Isaiah 34–36","Baruch 3–4","Proverbs 11:21–24"],
+  [208,"Exile","Isaiah 37–38","Baruch 5–6","Proverbs 11:25–28"],
+  [209,"Exile","Isaiah 39–40","Ezekiel 1","Proverbs 11:29–31"],
+  [210,"Exile","Isaiah 41–42","Ezekiel 2–3","Proverbs 12:1–4"],
+  [211,"Exile","Isaiah 43–44","Ezekiel 4–5","Proverbs 12:5–8"],
+  [212,"Exile","Isaiah 45–46","Ezekiel 6–7","Proverbs 12:9–12"],
+  [213,"Exile","Isaiah 47–48","Ezekiel 8–9","Proverbs 12:13–16"],
+  [214,"Exile","Isaiah 49–50","Ezekiel 10–11","Proverbs 12:17–20"],
+  [215,"Exile","Isaiah 51–52","Ezekiel 12–13","Proverbs 12:21–24"],
+  [216,"Exile","Isaiah 53–54","Ezekiel 14–15","Proverbs 12:25–28"],
+  [217,"Exile","Isaiah 55–56","Ezekiel 16","Proverbs 13:1–4"],
+  [218,"Exile","Isaiah 57–58","Ezekiel 17–18","Proverbs 13:5–8"],
+  [219,"Exile","Isaiah 59–60","Ezekiel 19","Proverbs 13:9–12"],
+  [220,"Exile","Isaiah 61–62","Ezekiel 20","Proverbs 13:13–16"],
+  [221,"Exile","Isaiah 63–64","Ezekiel 21–22","Proverbs 13:17–20"],
+  [222,"Exile","Isaiah 65","Ezekiel 23–24","Proverbs 13:21–25"],
+  [223,"Exile","Isaiah 66","Ezekiel 25–26","Proverbs 14:1–4"],
+  [224,"Exile","Jeremiah 1","Ezekiel 27","Proverbs 14:5–8"],
+  [225,"Exile","Jeremiah 2","Ezekiel 28","Proverbs 14:9–12"],
+  [226,"Exile","Jeremiah 3","Ezekiel 29–30","Proverbs 14:13–16"],
+  [227,"Exile","Jeremiah 4","Ezekiel 31–32","Proverbs 14:17–20"],
+  [228,"Exile","Jeremiah 5","Ezekiel 33","Proverbs 14:21–24"],
+  [229,"Exile","Jeremiah 6","Ezekiel 34–35","Proverbs 14:25–28"],
+  [230,"Exile","Jeremiah 7","Ezekiel 36","Proverbs 14:29–32"],
+  [231,"Exile","Jeremiah 8","Ezekiel 37–38","Proverbs 14:33–35"],
+  [232,"Exile","Jeremiah 9","Ezekiel 39","Proverbs 15:1–4"],
+  [233,"Exile","Jeremiah 10–11","Ezekiel 40","Proverbs 15:5–8"],
+  [234,"Exile","Jeremiah 12–13","Ezekiel 41–42","Proverbs 15:9–12"],
+  [235,"Exile","Jeremiah 14–15","Ezekiel 43–44","Proverbs 15:13–16"],
+  [236,"Exile","Jeremiah 16–17","Ezekiel 45–46","Proverbs 15:17–20"],
+  [237,"Exile","Jeremiah 18–19","Ezekiel 47–48","Proverbs 15:21–24"],
+  [238,"Exile","Jeremiah 20–21","Daniel 1–2","Proverbs 15:25–28"],
+  [239,"Exile","Jeremiah 22","Daniel 3","Proverbs 15:29–33"],
+  [240,"Exile","Jeremiah 23","Daniel 4–5","Proverbs 16:1–4"],
+  [241,"Exile","Jeremiah 24–25","Daniel 6–7","Proverbs 16:5–8"],
+  [242,"Exile","Jeremiah 26–27","Daniel 8–9","Proverbs 16:9–12"],
+  [243,"Exile","Jeremiah 28–29","Daniel 10–11","Proverbs 16:13–16"],
+  [244,"Exile","Jeremiah 30","Daniel 12–13","Proverbs 16:17–20"],
+  [245,"Exile","Jeremiah 31","Daniel 14","Proverbs 16:21–24"],
+  [246,"Exile","Jeremiah 32","Judith 1–2","Proverbs 16:25–28"],
+  [247,"Exile","Jeremiah 33–34","Judith 3–5","Proverbs 16:29–33"],
+  [248,"Exile","Jeremiah 35–36","Judith 6–7","Proverbs 17:1–4"],
+  [249,"Exile","Jeremiah 37–38","Judith 8–9","Proverbs 17:5–8"],
+  [250,"Exile","Jeremiah 39–40","Judith 10–11","Proverbs 17:9–12"],
+  [251,"Exile","Jeremiah 41–42","Judith 12–14","Proverbs 17:13–16"],
+  [252,"Exile","Jeremiah 43–44","Judith 15–16","Proverbs 17:17–20"],
+  [253,"Exile","Jeremiah 45–46","Lamentations 1","Proverbs 17:21–24"],
+  [254,"Exile","Jeremiah 47–48","Lamentations 2","Proverbs 18:1–4"],
+  [255,"Exile","Jeremiah 49–50","Lamentations 3","Proverbs 18:5–8"],
+  [256,"Exile","Jeremiah 51","Lamentations 4–5","Proverbs 18:9–12"],
+  [257,"Exile","Jeremiah 52","Obadiah 1","Proverbs 18:13–16"],
+  [258,"Messianic Checkpoint","Matthew 1–4","—","Proverbs 18:17–20"],
+  [259,"Messianic Checkpoint","Matthew 5–7","—","Proverbs 18:21–24"],
+  [260,"Messianic Checkpoint","Matthew 8–10","—","Proverbs 19:1–4"],
+  [261,"Messianic Checkpoint","Matthew 11–13","—","Proverbs 19:5–8"],
+  [262,"Messianic Checkpoint","Matthew 14–17","—","Proverbs 19:9–12"],
+  [263,"Messianic Checkpoint","Matthew 18–21","—","Proverbs 19:13–16"],
+  [264,"Messianic Checkpoint","Matthew 22–24","—","Proverbs 19:17–20"],
+  [265,"Messianic Checkpoint","Matthew 25–26","—","Proverbs 19:21–24"],
+  [266,"Messianic Checkpoint","Matthew 27–28","—","Proverbs 19:25–29"],
+  [267,"Return","Ezra 1–2","Haggai 1–2","Proverbs 20:1–3"],
+  [268,"Return","Ezra 3–4","Zechariah 1–3","Proverbs 20:4–7"],
+  [269,"Return","Ezra 5–6","Zechariah 4–6","Proverbs 20:8–11"],
+  [270,"Return","Ezra 7–8","Zechariah 7–8","Proverbs 20:12–15"],
+  [271,"Return","Ezra 9–10","Zechariah 9–11","Proverbs 20:16–19"],
+  [272,"Return","Nehemiah 1–2","Zechariah 12–13","Proverbs 20:20–22"],
+  [273,"Return","Nehemiah 3","Zechariah 14","Proverbs 20:23–26"],
+  [274,"Return","Nehemiah 4–5","Esther 1–2","Proverbs 20:27–30"],
+  [275,"Return","Nehemiah 6–7","Esther 3, 13","Proverbs 21:1–4"],
+  [276,"Return","Nehemiah 8","Esther 4, 14","Proverbs 21:5–8"],
+  [277,"Return","Nehemiah 9","Esther 15, 6–7","Proverbs 21:9–12"],
+  [278,"Return","Nehemiah 10","Esther 8, 16","Proverbs 21:13–16"],
+  [279,"Return","Nehemiah 11","Esther 9–11","Proverbs 21:17–20"],
+  [280,"Return","Nehemiah 12","Esther 10–12","Proverbs 21:21–24"],
+  [281,"Return","Nehemiah 13","Malachi 1–4","Proverbs 21:25–28"],
+  [282,"Maccabean Revolt","1 Maccabees 1","Sirach 1–3","Proverbs 21:29–31"],
+  [283,"Maccabean Revolt","1 Maccabees 2","Sirach 4–6","Proverbs 22:1–4"],
+  [284,"Maccabean Revolt","1 Maccabees 3","Sirach 7–9","Proverbs 22:5–8"],
+  [285,"Maccabean Revolt","1 Maccabees 4","Sirach 10–12","Proverbs 22:9–12"],
+  [286,"Maccabean Revolt","1 Maccabees 5","Sirach 13–15","Proverbs 22:13–16"],
+  [287,"Maccabean Revolt","1 Maccabees 6","Sirach 16–18","Proverbs 22:17–21"],
+  [288,"Maccabean Revolt","1 Maccabees 7","Sirach 19–21","Proverbs 22:22–25"],
+  [289,"Maccabean Revolt","1 Maccabees 8","Sirach 22–23","Proverbs 22:26–29"],
+  [290,"Maccabean Revolt","1 Maccabees 9","Sirach 24–25","Proverbs 23:1–4"],
+  [291,"Maccabean Revolt","1 Maccabees 10","Sirach 26–27","Proverbs 23:5–8"],
+  [292,"Maccabean Revolt","1 Maccabees 11","Sirach 28–29","Proverbs 23:9–12"],
+  [293,"Maccabean Revolt","1 Maccabees 12","Sirach 30–31","Proverbs 23:13–16"],
+  [294,"Maccabean Revolt","1 Maccabees 13","Sirach 32–33","Proverbs 23:17–21"],
+  [295,"Maccabean Revolt","1 Maccabees 14","Sirach 34–35","Proverbs 23:22–25"],
+  [296,"Maccabean Revolt","1 Maccabees 15","Sirach 36–37","Proverbs 23:26–28"],
+  [297,"Maccabean Revolt","1 Maccabees 16","Sirach 38–39","Proverbs 23:29–35"],
+  [298,"Maccabean Revolt","2 Maccabees 1","Sirach 40–41","Proverbs 24:1–7"],
+  [299,"Maccabean Revolt","2 Maccabees 2","Sirach 42–44","Proverbs 24:8–9"],
+  [300,"Maccabean Revolt","2 Maccabees 3","Sirach 45–46","Proverbs 24:10–12"],
+  [301,"Maccabean Revolt","2 Maccabees 4","Sirach 47–49","Proverbs 24:13–16"],
+  [302,"Maccabean Revolt","2 Maccabees 5","Sirach 50–51","Proverbs 24:17–20"],
+  [303,"Maccabean Revolt","2 Maccabees 6","Wisdom 1–2","Proverbs 24:21–26"],
+  [304,"Maccabean Revolt","2 Maccabees 7","Wisdom 3–4","Proverbs 24:27–29"],
+  [305,"Maccabean Revolt","2 Maccabees 8","Wisdom 5–6","Proverbs 24:30–34"],
+  [306,"Maccabean Revolt","2 Maccabees 9","Wisdom 7–8","Proverbs 25:1–3"],
+  [307,"Maccabean Revolt","2 Maccabees 10","Wisdom 9–10","Proverbs 25:4–7"],
+  [308,"Maccabean Revolt","2 Maccabees 11","Wisdom 11–12","Proverbs 25:8–10"],
+  [309,"Maccabean Revolt","2 Maccabees 12","Wisdom 13–14","Proverbs 25:11–14"],
+  [310,"Maccabean Revolt","2 Maccabees 13","Wisdom 15–16","Proverbs 25:15–17"],
+  [311,"Maccabean Revolt","2 Maccabees 14","Wisdom 17–18","Proverbs 25:18–20"],
+  [312,"Maccabean Revolt","2 Maccabees 15","Wisdom 19","Proverbs 25:21–23"],
+  [313,"Messianic Fulfillment","Luke 1–2","—","Proverbs 25:24–26"],
+  [314,"Messianic Fulfillment","Luke 3–5","—","Proverbs 25:27–28"],
+  [315,"Messianic Fulfillment","Luke 6–8","—","Proverbs 26:1–3"],
+  [316,"Messianic Fulfillment","Luke 9–10","—","Proverbs 26:4–6"],
+  [317,"Messianic Fulfillment","Luke 11–12","—","Proverbs 26:7–9"],
+  [318,"Messianic Fulfillment","Luke 13–16","—","Proverbs 26:10–12"],
+  [319,"Messianic Fulfillment","Luke 17–19","—","Proverbs 26:13–16"],
+  [320,"Messianic Fulfillment","Luke 20–22:38","—","Proverbs 26:17–19"],
+  [321,"Messianic Fulfillment","Luke 22:39–24","—","Proverbs 26:20–23"],
+  [322,"The Church","Acts 1","Romans 1","Proverbs 26:24–26"],
+  [323,"The Church","Acts 2","Romans 2–3","Proverbs 26:27–28"],
+  [324,"The Church","Acts 3","Romans 4–5","Proverbs 27:1–3"],
+  [325,"The Church","Acts 4","Romans 6–7","Proverbs 27:4–6"],
+  [326,"The Church","Acts 5","Romans 8","Proverbs 27:7–9"],
+  [327,"The Church","Acts 6","Romans 9–10","Proverbs 27:10–12"],
+  [328,"The Church","Acts 7","Romans 11–12","Proverbs 27:13–14"],
+  [329,"The Church","Acts 8","Romans 13–14","Proverbs 27:15–17"],
+  [330,"The Church","Acts 9","Romans 15–16","Proverbs 27:18–20"],
+  [331,"The Church","Acts 10","1 Corinthians 1–2","Proverbs 27:21–22"],
+  [332,"The Church","Acts 11","1 Corinthians 3–4","Proverbs 27:23–27"],
+  [333,"The Church","Acts 12","1 Corinthians 5–6","Proverbs 28:1–3"],
+  [334,"The Church","Acts 13","1 Corinthians 7–8","Proverbs 28:4–6"],
+  [335,"The Church","Acts 14","1 Corinthians 9–10","Proverbs 28:7–9"],
+  [336,"The Church","Acts 15","1 Corinthians 11–12","Proverbs 28:10–12"],
+  [337,"The Church","Acts 16","1 Corinthians 13–14","Proverbs 28:13–15"],
+  [338,"The Church","Acts 17","1 Corinthians 15","Proverbs 28:16–18"],
+  [339,"The Church","Acts 18","1 Corinthians 16","Proverbs 28:19–21"],
+  [340,"The Church","Acts 19","2 Corinthians 1–2","Proverbs 28:22–24"],
+  [341,"The Church","Acts 20","2 Corinthians 3–5","Proverbs 28:25–28"],
+  [342,"The Church","Acts 21","2 Corinthians 6–8","Proverbs 29:1–4"],
+  [343,"The Church","Acts 22","2 Corinthians 9–11","Proverbs 29:5–7"],
+  [344,"The Church","Acts 23","2 Corinthians 12–13","Proverbs 29:8–11"],
+  [345,"The Church","Acts 24","Galatians 1–3","Proverbs 29:12–14"],
+  [346,"The Church","Acts 25","Galatians 4–6","Proverbs 29:15–17"],
+  [347,"The Church","Acts 26","Ephesians 1–3","Proverbs 29:18–21"],
+  [348,"The Church","Acts 27","Ephesians 4–6","Proverbs 29:22–24"],
+  [349,"The Church","Acts 28","Philippians 1–2","Proverbs 29:25–27"],
+  [350,"The Church","James 1–2","Philippians 3–4","Proverbs 30:1–6"],
+  [351,"The Church","James 3–5","Colossians 1–2","Proverbs 30:7–9"],
+  [352,"The Church","1 Peter 1–2","Colossians 3–4","Proverbs 30:10–14"],
+  [353,"The Church","1 Peter 3–5","1 Thessalonians 1–3","Proverbs 30:15–16"],
+  [354,"The Church","2 Peter 1–3","1 Thessalonians 4–5","Proverbs 30:17–19"],
+  [355,"The Church","1 John 1–3","2 Thessalonians 1–3","Proverbs 30:20–23"],
+  [356,"The Church","1 John 4–5","1 Timothy 1–3","Proverbs 30:24–28"],
+  [357,"The Church","2 John, 3 John","1 Timothy 4–6","Proverbs 30:29–33"],
+  [358,"The Church","Jude","2 Timothy 1–2","Proverbs 31:1–7"],
+  [359,"The Church","Revelation 1–3","2 Timothy 3–4","Proverbs 31:8–9"],
+  [360,"The Church","Revelation 4–7","Titus 1–3","Proverbs 31:10–15"],
+  [361,"The Church","Revelation 8–11","Philemon","Proverbs 31:16–18"],
+  [362,"The Church","Revelation 12–14","Hebrews 1–4","Proverbs 31:19–22"],
+  [363,"The Church","Revelation 15–17","Hebrews 5–8","Proverbs 31:23–25"],
+  [364,"The Church","Revelation 18–20","Hebrews 9–10","Proverbs 31:26–29"],
+  [365,"The Church","Revelation 21–22","Hebrews 11–13","Proverbs 31:30–31"],
+];
+
+const PERIOD_CLASS = {
+  "Early World": "period-early-world",
+  "Patriarchs": "period-patriarchs",
+  "Egypt & Exodus": "period-egypt-exodus",
+  "Desert Wanderings": "period-desert",
+  "Conquest & Judges": "period-conquest",
+  "Messianic Checkpoint": "period-messianic-1",
+  "Royal Kingdom": "period-royal",
+  "Divided Kingdom": "period-divided",
+  "Exile": "period-exile",
+  "Messianic Fulfillment": "period-messianic-4",
+  "Return": "period-return",
+  "Maccabean Revolt": "period-maccabean",
+  "The Church": "period-church",
+};
+
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+// ── State ──
+let state = {
+  startDate: null,   // JS Date, day 1 start
+  currentDay: 135,   // last completed day (user's progress)
+  pace: 2,           // episodes per calendar day
+  checked: {},       // {dayNum: true}
+  currentWeek: 1,    // 1-indexed week shown
+  view: 'week',
+  vacations: [],     // [{start: 'YYYY-MM-DD', end: 'YYYY-MM-DD', label: ''}]
+};
+
+function loadState() {
+  const saved = LS.get('biya_state');
+  if (saved) {
+    state = { ...state, ...saved };
+    if (state.startDate) state.startDate = new Date(state.startDate);
+  }
+  if (!state.startDate) {
+    // Back-calculate: day 135 done, 2/day => ~67 calendar days elapsed
+    const d = new Date('2026-05-27');
+    d.setDate(d.getDate() - Math.floor((state.currentDay - 1) / state.pace));
+    state.startDate = d;
+  }
+}
+
+function saveState() {
+  const toSave = { ...state, startDate: state.startDate ? state.startDate.toISOString() : null };
+  LS.set('biya_state', toSave);
+}
+
+// ── Schedule helpers ──
+function isVacationDate(date) {
+  const t = date.getTime();
+  return state.vacations.some(v => {
+    const s = new Date(v.start + 'T00:00:00').getTime();
+    const e = new Date(v.end + 'T00:00:00').getTime();
+    return t >= s && t <= e;
+  });
+}
+
+function dateForDay(dayNum) {
+  // What calendar date should day N fall on, given start + pace,
+  // skipping over any vacation days (which don't count toward progress)
+  const k = Math.floor((dayNum - 1) / state.pace); // 0-indexed "active day" needed
+  const d = new Date(state.startDate);
+  let count = -1;
+  // Safety cap to avoid infinite loops
+  for (let i = 0; i < 3650; i++) {
+    if (!isVacationDate(d)) {
+      count++;
+      if (count === k) return new Date(d);
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return new Date(d);
+}
+
+function targetDayForDate(date) {
+  // What plan day should be done by this calendar date,
+  // counting only non-vacation days from start through date (inclusive)
+  let d = new Date(state.startDate);
+  let count = 0;
+  for (let i = 0; i < 3650; i++) {
+    if (d > date) break;
+    if (!isVacationDate(d)) count++;
+    d.setDate(d.getDate() + 1);
+  }
+  return Math.min(365, Math.max(1, count * state.pace));
+}
+
+function todayTargetDay() {
+  return targetDayForDate(todayMidnight());
+}
+
+function todayMidnight() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function weekForDay(dayNum) {
+  return Math.ceil(dayNum / 7);
+}
+
+function daysInWeek(weekNum) {
+  const start = (weekNum - 1) * 7 + 1;
+  const end = Math.min(start + 6, 365);
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
+function totalWeeks() { return Math.ceil(365 / 7); }
+
+function formatDate(d) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// ── Rendering ──
+function periodClass(period) {
+  return PERIOD_CLASS[period] || 'period-church';
+}
+
+function renderDay(dayNum) {
+  const row = PLAN[dayNum - 1];
+  const [num, period, r1, r2, psalm] = row;
+  const scheduledDate = dateForDay(dayNum);
+  const today = todayMidnight();
+  const target = todayTargetDay();
+  const isDone = !!state.checked[String(dayNum)];
+  const isToday = scheduledDate.getTime() === today.getTime();
+  const isBehind = !isDone && dayNum <= target && dayNum < target;
+  const isFuture = scheduledDate > today;
+
+  let cardClass = 'day-card';
+  if (isDone) cardClass += ' is-done';
+  else if (isToday) cardClass += ' is-today';
+  else if (isBehind) cardClass += ' is-behind';
+  else if (isFuture) cardClass += ' is-future';
+
+  const pClass = periodClass(period);
+
+  return `
+    <div class="${cardClass}" id="day-${dayNum}">
+      <div class="day-header">
+        <div class="day-checkbox ${isDone ? 'checked' : ''}" onclick="toggleDay(${dayNum})" title="Mark day ${dayNum} complete"></div>
+        <div class="day-meta">
+          <div class="day-title-row">
+            <span class="day-num">Day ${dayNum}</span>
+            <span class="period-badge ${pClass}">${period}</span>
+            ${isToday && !isDone ? '<span class="today-badge">Today</span>' : ''}
+            ${isBehind ? '<span class="behind-badge">Behind</span>' : ''}
+            <span class="day-date">${formatDate(scheduledDate)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-readings">
+        <div class="reading-row"><span class="reading-label">I</span><span class="reading-text">${r1}</span></div>
+        ${r2 !== '—' ? `<div class="reading-row"><span class="reading-label">II</span><span class="reading-text">${r2}</span></div>` : ''}
+        <div class="reading-row"><span class="reading-label">✦</span><span class="reading-text psalm">${psalm}</span></div>
+      </div>
+    </div>`;
+}
+
+function renderWeek() {
+  const days = state.view === 'week' ? daysInWeek(state.currentWeek) : Array.from({ length: 365 }, (_, i) => i + 1);
+  document.getElementById('dayGrid').innerHTML = days.map(renderDay).join('');
+}
+
+function renderWeekLabel() {
+  const days = daysInWeek(state.currentWeek);
+  const start = dateForDay(days[0]);
+  const end = dateForDay(days[days.length - 1]);
+  document.getElementById('weekLabel').innerHTML =
+    `Week ${state.currentWeek} <span>Days ${days[0]}–${days[days.length - 1]} · ${formatDate(start)} – ${formatDate(end)}</span>`;
+  document.getElementById('prevWeekBtn').disabled = state.currentWeek <= 1;
+  document.getElementById('nextWeekBtn').disabled = state.currentWeek >= totalWeeks();
+}
+
+function renderStats() {
+  const completed = Object.keys(state.checked).filter(k => state.checked[k]).length;
+  const today = todayMidnight();
+  const onVacationToday = isVacationDate(today);
+  const target = todayTargetDay();
+  const behind = Math.max(0, target - completed);
+  const pct = Math.round((completed / 365) * 100);
+  const remaining = 365 - completed;
+
+  // Estimate finish date by walking forward, skipping vacation days,
+  // counting `pace` plan-days per active day.
+  const activeDaysNeeded = Math.ceil(remaining / state.pace);
+  const finDate = new Date(today);
+  let active = 0;
+  for (let i = 0; i < 3650 && active < activeDaysNeeded; i++) {
+    if (!isVacationDate(finDate)) active++;
+    if (active < activeDaysNeeded) finDate.setDate(finDate.getDate() + 1);
+  }
+
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat"><div class="stat-num">${completed}</div><div class="stat-label">Days done</div></div>
+    <div class="stat"><div class="stat-num">${pct}%</div><div class="stat-label">Complete</div></div>
+    <div class="stat"><div class="stat-num">${onVacationToday ? '🧳' : (behind > 0 ? behind : '✓')}</div><div class="stat-label">${onVacationToday ? 'On vacation' : (behind > 0 ? 'Days behind' : 'On track')}</div></div>
+    <div class="stat"><div class="stat-num">${formatDate(finDate)}</div><div class="stat-label">Est. finish</div></div>
+  `;
+
+  document.getElementById('progressText').textContent = `${completed} of 365 days completed`;
+  document.getElementById('progressPct').textContent = `${pct}%`;
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  const bar = document.getElementById('catchupBar');
+  if (onVacationToday) {
+    bar.classList.add('visible');
+    bar.classList.add('vacation-mode');
+    document.getElementById('catchupBarTitle').textContent = '🧳 On vacation';
+    document.getElementById('catchupText').textContent =
+      `You're marked as away today. Your schedule is paused — no reading is expected, and your plan will pick back up when you return.`;
+  } else if (behind > 0) {
+    bar.classList.add('visible');
+    bar.classList.remove('vacation-mode');
+    const epPerDay = behind > 7 ? Math.ceil(behind / 7) + state.pace : state.pace + 1;
+    document.getElementById('catchupBarTitle').textContent = '⚠ You\'re behind schedule';
+    document.getElementById('catchupText').textContent =
+      `You're ${behind} day${behind > 1 ? 's' : ''} behind your schedule. To catch up this week, aim for about ${epPerDay} episodes per day, or simply work through the highlighted days.`;
+  } else {
+    bar.classList.remove('visible');
+    bar.classList.remove('vacation-mode');
+  }
+}
+
+function renderSettings() {
+  document.getElementById('startDateInput').value = state.startDate
+    ? state.startDate.toISOString().split('T')[0] : '';
+  document.getElementById('currentDayInput').value = state.currentDay;
+  document.getElementById('paceInput').value = state.pace;
+  updateEpisodePreview(state.currentDay);
+  renderVacationList();
+}
+
+function renderVacationList() {
+  const list = document.getElementById('vacationList');
+  if (!list) return;
+  if (!state.vacations.length) {
+    list.innerHTML = '<div style="font-size:12px; color:rgba(245,239,224,0.3); font-style:italic;">No vacation days added</div>';
+    return;
+  }
+  const sorted = [...state.vacations].sort((a, b) => a.start.localeCompare(b.start));
+  list.innerHTML = sorted.map(v => {
+    const startFmt = formatDate(new Date(v.start + 'T00:00:00'));
+    const endFmt = formatDate(new Date(v.end + 'T00:00:00'));
+    const range = v.start === v.end ? startFmt : `${startFmt} – ${endFmt}`;
+    const label = v.label ? ` — ${v.label}` : '';
+    return `<div class="vacation-item">
+      <span><span class="vacation-dates">${range}</span>${label}</span>
+      <button class="vacation-remove" onclick="removeVacation('${v.start}','${v.end}')" title="Remove">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function addVacation() {
+  const start = document.getElementById('vacationStartInput').value;
+  let end = document.getElementById('vacationEndInput').value;
+  const label = document.getElementById('vacationLabelInput').value.trim();
+  if (!start) return;
+  if (!end) end = start;
+  if (end < start) { const tmp = start; }
+  if (end < start) return; // invalid range, silently ignore
+
+  state.vacations.push({ start, end, label });
+  saveState();
+
+  document.getElementById('vacationStartInput').value = '';
+  document.getElementById('vacationEndInput').value = '';
+  document.getElementById('vacationLabelInput').value = '';
+
+  renderVacationList();
+  render();
+}
+
+function removeVacation(start, end) {
+  state.vacations = state.vacations.filter(v => !(v.start === start && v.end === end));
+  saveState();
+  renderVacationList();
+  render();
+}
+
+function render() {
+  renderStats();
+  if (state.view === 'week') renderWeekLabel();
+  document.getElementById('weekNav').style.display = state.view === 'week' ? 'flex' : 'none';
+  renderWeek();
+}
+
+// ── Interactions ──
+function toggleDay(dayNum) {
+  state.checked[String(dayNum)] = !state.checked[String(dayNum)];
+  saveState();
+  render();
+}
+
+function changeWeek(delta) {
+  state.currentWeek = Math.max(1, Math.min(totalWeeks(), state.currentWeek + delta));
+  saveState();
+  render();
+}
+
+function jumpToToday() {
+  const target = todayTargetDay();
+  state.currentWeek = weekForDay(target);
+  state.view = 'week';
+  document.getElementById('btnWeek').classList.add('active');
+  document.getElementById('btnAll').classList.remove('active');
+  saveState();
+  render();
+  setTimeout(() => {
+    const el = document.getElementById('day-' + target);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
+
+function setView(v) {
+  state.view = v;
+  document.getElementById('btnWeek').classList.toggle('active', v === 'week');
+  document.getElementById('btnAll').classList.toggle('active', v === 'all');
+  saveState();
+  render();
+}
+
+function toggleSettings() {
+  const p = document.getElementById('settingsPanel');
+  p.classList.toggle('open');
+  renderSettings();
+}
+
+function stepEpisode(delta) {
+  const input = document.getElementById('currentDayInput');
+  let val = parseInt(input.value) || state.currentDay;
+  val = Math.max(1, Math.min(365, val + delta));
+  input.value = val;
+  updateEpisodePreview(val);
+}
+
+function updateEpisodePreview(val) {
+  const preview = document.getElementById('episodePreview');
+  if (!preview) return;
+  const row = PLAN[val - 1];
+  if (row) preview.textContent = row[2]; // first reading
+}
+
+function rescheduleFromToday() {
+  const cd = parseInt(document.getElementById('currentDayInput').value);
+  if (isNaN(cd) || cd < 1 || cd > 365) return;
+
+  state.currentDay = cd;
+
+  // Rebuild start date so that today = the day after currentDay
+  // i.e. day (cd+1) falls on today's calendar date
+  const today = todayMidnight();
+  // dateForDay(cd+1) should equal today
+  // startDate + floor(cd / pace) days = today
+  const newStart = new Date(today);
+  newStart.setDate(newStart.getDate() - Math.floor(cd / state.pace));
+  state.startDate = newStart;
+
+  // Mark all days up to currentDay as done
+  for (let i = 1; i <= state.currentDay; i++) {
+    state.checked[String(i)] = true;
+  }
+  // Uncheck days ahead of currentDay
+  for (let i = state.currentDay + 1; i <= 365; i++) {
+    delete state.checked[String(i)];
+  }
+
+  saveState();
+  document.getElementById('settingsPanel').classList.remove('open');
+  state.currentWeek = weekForDay(state.currentDay + 1);
+  render();
+}
+
+function saveSettings() {
+  const d = document.getElementById('startDateInput').value;
+  if (d) state.startDate = new Date(d + 'T00:00:00');
+  const p = parseInt(document.getElementById('paceInput').value);
+  if (p >= 1 && p <= 5) state.pace = p;
+  saveState();
+  document.getElementById('settingsPanel').classList.remove('open');
+  render();
+}
+
+// ── Init ──
+loadState();
+
+// Pre-mark days 1-136 as done on first load
+if (!LS.get('biya_state')) {
+  for (let i = 1; i <= state.currentDay; i++) state.checked[String(i)] = true;
+  saveState();
+} else {
+  // Ensure checked is populated
+  let anyChecked = Object.values(state.checked).some(Boolean);
+  if (!anyChecked) {
+    for (let i = 1; i <= state.currentDay; i++) state.checked[String(i)] = true;
+    saveState();
+  }
+}
+
+state.currentWeek = weekForDay(state.currentDay);
+render();
+</script>
+</body>
+</html>
